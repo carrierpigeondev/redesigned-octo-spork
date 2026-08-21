@@ -1,5 +1,5 @@
 public enum Resource
 {
-    Ruby = 0,
+    Ruby,
     Flesh,
 }
