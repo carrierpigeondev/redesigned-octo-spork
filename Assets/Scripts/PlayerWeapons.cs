@@ -4,8 +4,13 @@ using UnityEngine;
 public class PlayerWeapons : MonoBehaviour
 {
     public Weapon[] OwnedWeapons;
-    public Weapon[] WeaponToolbar;
+    public Weapon[] WeaponsInToolbar = { Weapon.None, Weapon.None, Weapon.None };
     public int CurrentWeaponIndex;
+
+    private void Start()
+    {
+
+    }
 
     public void IncrementWeaponIndex()
     {
