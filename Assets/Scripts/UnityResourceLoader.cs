@@ -4,7 +4,7 @@ public class UnityResourceLoader : MonoBehaviour
 {
     // organizing by what specific behaviours will need to access
     // e.g., WeaponsToolbarBehaviour doesn't need anything other than WeaponToolbarTextures
-    public static Texture2D[] WeaponToolbarTextures;
+    public static Texture2D[] WeaponToolbarTextures = new Texture2D[5];
 
     void Awake()
     {

@@ -1,9 +1,10 @@
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 public class PlayerWeapons : MonoBehaviour
 {
-    public Weapon[] OwnedWeapons;
+    public List<Weapon> OwnedWeapons;
     public Weapon[] WeaponsInToolbar = { Weapon.None, Weapon.None, Weapon.None };
     public int CurrentWeaponIndex;
 
@@ -15,7 +16,7 @@ public class PlayerWeapons : MonoBehaviour
     public void IncrementWeaponIndex()
     {
         int potentialWeaponIndex = CurrentWeaponIndex + 1;
-        if (potentialWeaponIndex > OwnedWeapons.Length - 1)
+        if (potentialWeaponIndex > OwnedWeapons.Count - 1)
         {
             potentialWeaponIndex = 0;
         }
@@ -27,7 +28,7 @@ public class PlayerWeapons : MonoBehaviour
         int potentialWeaponsIndex = CurrentWeaponIndex - 1;
         if (potentialWeaponsIndex < 0)
         {
-            potentialWeaponsIndex = OwnedWeapons.Length - 1;
+            potentialWeaponsIndex = OwnedWeapons.Count - 1;
         }
         CurrentWeaponIndex = potentialWeaponsIndex;
     }

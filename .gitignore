@@ -1,6 +1,68 @@
-.vs
+# Unity-generated folders
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+[Mm]emoryCaptures/
+[Rr]ecordings/
+
+# Asset Store tools
+[Aa]ssets/AssetStoreTools*
+
+# IDE/editor files
+.vscode/
+.idea/
+*.csproj
+*.sln
+*.slnx
+*.unityproj
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+
+# Rider
+.idea/
+*.sln.iml
+
+# Visual Studio
+.vs/
 .vsconfig
-Library/
-Logs/
-Temp/
-/UserSettings
+
+# User-specific files
+*.user
+*.userprefs
+*.pidb.meta
+*.pdb.meta
+*.mdb.meta
+
+# Crash reports
+sysinfo.txt
+crashlytics-build.properties
+
+# Builds/packages
+*.apk
+*.aab
+*.unitypackage
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary/editor swap files
+*~
+*.swp
+*.swo
+
+# JetBrains temporary files
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+
+# Unity auto-generated test scenes
+InitTestScene*.unity*
