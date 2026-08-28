@@ -13,23 +13,20 @@ public class PlayerWeapons : MonoBehaviour
 
     private InputSystem_Actions Inputs;
 
-    private void Start()
+    private void Awake()
     {
-        ToolbarRef.ToolbarIndicatorSet(CurrentWeaponIndex); // do once on start
         Inputs = new InputSystem_Actions();
     }
 
-    private void Update()
+    private void Start()
     {
-        
+        ToolbarRef.ToolbarIndicatorSet(CurrentWeaponIndex); // do once on start
     }
-
-    // ERROR HERE IT DOIESNT WORK WHAT WHY :D
 
     private void OnEnable()
     {
-        Inputs.UI.ScrollWheel.performed += OnScrollWheelPerformed;
         Inputs.UI.ScrollWheel.Enable();
+        Inputs.UI.ScrollWheel.performed += OnScrollWheelPerformed;
     }
 
     private void OnDisable()
@@ -50,10 +47,11 @@ public class PlayerWeapons : MonoBehaviour
         }
     }
 
+    // LOGIC IS FLATOUT WRONG?
     public void IncrementWeaponIndex()
     {
         int potentialWeaponIndex = CurrentWeaponIndex + 1;
-        if (potentialWeaponIndex > OwnedWeapons.Count - 1)
+        if (potentialWeaponIndex > WeaponsInToolbar.Length - 1)
         {
             potentialWeaponIndex = 0;
         }
@@ -66,7 +64,7 @@ public class PlayerWeapons : MonoBehaviour
         int potentialWeaponsIndex = CurrentWeaponIndex - 1;
         if (potentialWeaponsIndex < 0)
         {
-            potentialWeaponsIndex = OwnedWeapons.Count - 1;
+            potentialWeaponsIndex = WeaponsInToolbar.Length - 1;
         }
         CurrentWeaponIndex = potentialWeaponsIndex;
         ToolbarRef.ToolbarIndicatorSet(CurrentWeaponIndex);
