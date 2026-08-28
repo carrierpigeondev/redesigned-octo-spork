@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
 
-[RequireComponent(typeof(WeaponsToolbarBehavior))]
 public class PlayerWeapons : MonoBehaviour
 {
     public List<Weapon> OwnedWeapons;

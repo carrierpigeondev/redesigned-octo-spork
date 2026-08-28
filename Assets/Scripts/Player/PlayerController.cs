@@ -13,9 +13,11 @@ public class PlayerController : MonoBehaviour
     
     [SerializeField] private float moveSpeed = 5.0f;
     [SerializeField] private float sensitivity = 0.1f;
+    [SerializeField] private float gravity = -9.81f;
     [SerializeField] private Camera camera;
 
     private float pitch = 0.0f;
+    private float verticalVelocity = 0.0f;
     
     private void Awake()
     {
@@ -44,16 +46,23 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        CalculateGravity();
         HandleMovement(); // doesn't work as a discrete call on .performed
     }
     
     private void HandleMovement()
     {
         Vector2 moveInput = inputs.Player.Move.ReadValue<Vector2>();
-        Vector3 moveVec = transform.right * moveInput.x + transform.forward * moveInput.y;
-        moveVec.y = 0.0f;
+        Vector3 inputVec = transform.right * moveInput.x + transform.forward * moveInput.y;
+        Vector3 moveVec = moveSpeed * inputVec;
         
-        controller.Move(moveSpeed * Time.deltaTime * moveVec);
+        controller.Move(new Vector3(moveVec.x, verticalVelocity, moveVec.y) * Time.deltaTime);
+    }
+
+    private void CalculateGravity()
+    {
+        if (controller.isGrounded && verticalVelocity < 0.0f) verticalVelocity = -2.0f;
+        verticalVelocity += gravity * Time.deltaTime;
     }
 
     private void OnLook(InputAction.CallbackContext context)
