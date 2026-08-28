@@ -2,50 +2,22 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 
+[RequireComponent(typeof(WeaponsToolbarBehavior))]
 public class PlayerWeapons : MonoBehaviour
 {
     public List<Weapon> OwnedWeapons;
     public Weapon[] WeaponsInToolbar = { Weapon.None, Weapon.None, Weapon.None };
     public int CurrentWeaponIndex = 0;
 
-    public WeaponsToolbarBehavior ToolbarRef;
+    [SerializeField] private WeaponsToolbarBehavior toolbarRef;
 
     private InputSystem_Actions inputs;
 
-    private void Awake()
-    {
-        inputs = new InputSystem_Actions();
-    }
-
     private void Start()
     {
-        ToolbarRef.ToolbarIndicatorSet(CurrentWeaponIndex); // do once on start
-    }
-
-    private void OnEnable()
-    {
-        inputs.UI.ScrollWheel.Enable();
-        inputs.UI.ScrollWheel.performed += OnScrollWheelPerformed;
-    }
-
-    private void OnDisable()
-    {
-        inputs.UI.ScrollWheel.performed -= OnScrollWheelPerformed;
-        inputs.UI.ScrollWheel.Disable();
-    }
-
-    private void OnScrollWheelPerformed(InputAction.CallbackContext context)
-    {
-        Vector2 scrollDelta = context.ReadValue<Vector2>();
-        
-        if (scrollDelta.y > 0)
-        {
-            IncrementWeaponIndex();
-        } else if (scrollDelta.y < 0)
-        {
-            DecrementWeaponIndex();
-        }
+        toolbarRef.ToolbarIndicatorSet(CurrentWeaponIndex); // do once on start
     }
 
     public void IncrementWeaponIndex()
@@ -56,7 +28,7 @@ public class PlayerWeapons : MonoBehaviour
             potentialWeaponIndex = 0;
         }
         CurrentWeaponIndex = potentialWeaponIndex;
-        ToolbarRef.ToolbarIndicatorSet(CurrentWeaponIndex);
+        toolbarRef.ToolbarIndicatorSet(CurrentWeaponIndex);
     }
 
     public void DecrementWeaponIndex()
@@ -67,6 +39,6 @@ public class PlayerWeapons : MonoBehaviour
             potentialWeaponsIndex = WeaponsInToolbar.Length - 1;
         }
         CurrentWeaponIndex = potentialWeaponsIndex;
-        ToolbarRef.ToolbarIndicatorSet(CurrentWeaponIndex);
+        toolbarRef.ToolbarIndicatorSet(CurrentWeaponIndex);
     }
 }
