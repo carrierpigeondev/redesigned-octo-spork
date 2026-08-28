@@ -14,6 +14,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float moveSpeed = 5.0f;
     [SerializeField] private float sensitivity = 0.1f;
     [SerializeField] private float gravity = -9.81f;
+    [SerializeField] private float jumpVelocity = 7.0f;
     [SerializeField] private Camera camera;
 
     private float pitch = 0.0f;
@@ -34,12 +35,14 @@ public class PlayerController : MonoBehaviour
     {
         inputs.Enable();
         inputs.Player.Look.performed += OnLook;
+        inputs.Player.Jump.performed += OnJump;
         inputs.UI.ScrollWheel.performed += OnScrollWheelPerformed;
     }
 
     private void OnDisable()
     {
         inputs.UI.ScrollWheel.performed -= OnScrollWheelPerformed;
+        inputs.Player.Jump.performed -= OnJump;
         inputs.Player.Look.performed -= OnLook;
         inputs.Disable();
     }
@@ -56,11 +59,12 @@ public class PlayerController : MonoBehaviour
         Vector3 inputVec = transform.right * moveInput.x + transform.forward * moveInput.y;
         Vector3 moveVec = moveSpeed * inputVec;
         
-        controller.Move(new Vector3(moveVec.x, verticalVelocity, moveVec.y) * Time.deltaTime);
+        controller.Move(new Vector3(moveVec.x, verticalVelocity, moveVec.z) * Time.deltaTime);
     }
 
     private void CalculateGravity()
     {
+        // keep negative so that it sticks to the ground unless explicitly positive
         if (controller.isGrounded && verticalVelocity < 0.0f) verticalVelocity = -2.0f;
         verticalVelocity += gravity * Time.deltaTime;
     }
@@ -82,5 +86,11 @@ public class PlayerController : MonoBehaviour
         Vector2 scrollDelta = context.ReadValue<Vector2>();
         if (scrollDelta.y > 0) weapons.IncrementWeaponIndex();
         else if (scrollDelta.y < 0) weapons.DecrementWeaponIndex();
+    }
+
+    private void OnJump(InputAction.CallbackContext context)
+    {
+        if (!controller.isGrounded) return;
+        verticalVelocity += jumpVelocity;
     }
 }
