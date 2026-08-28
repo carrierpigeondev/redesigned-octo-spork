@@ -14,7 +14,6 @@ public static class WeaponExtensions
 {
     public static Texture2D GetWeaponToolbarTexture(this Weapon weapon)
     {
-        Debug.Log($"getting weapon for the type: {weapon}");
         return UnityResourceLoader.WeaponToolbarTextures[(int)weapon];
     }
 }

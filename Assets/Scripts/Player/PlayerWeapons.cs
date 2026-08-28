@@ -11,11 +11,11 @@ public class PlayerWeapons : MonoBehaviour
 
     public WeaponsToolbarBehavior ToolbarRef;
 
-    private InputSystem_Actions Inputs;
+    private InputSystem_Actions inputs;
 
     private void Awake()
     {
-        Inputs = new InputSystem_Actions();
+        inputs = new InputSystem_Actions();
     }
 
     private void Start()
@@ -25,19 +25,20 @@ public class PlayerWeapons : MonoBehaviour
 
     private void OnEnable()
     {
-        Inputs.UI.ScrollWheel.Enable();
-        Inputs.UI.ScrollWheel.performed += OnScrollWheelPerformed;
+        inputs.UI.ScrollWheel.Enable();
+        inputs.UI.ScrollWheel.performed += OnScrollWheelPerformed;
     }
 
     private void OnDisable()
     {
-        Inputs.UI.ScrollWheel.performed -= OnScrollWheelPerformed;
-        Inputs.UI.ScrollWheel.Disable();
+        inputs.UI.ScrollWheel.performed -= OnScrollWheelPerformed;
+        inputs.UI.ScrollWheel.Disable();
     }
 
     private void OnScrollWheelPerformed(InputAction.CallbackContext context)
     {
         Vector2 scrollDelta = context.ReadValue<Vector2>();
+        
         if (scrollDelta.y > 0)
         {
             IncrementWeaponIndex();
@@ -47,7 +48,6 @@ public class PlayerWeapons : MonoBehaviour
         }
     }
 
-    // LOGIC IS FLATOUT WRONG?
     public void IncrementWeaponIndex()
     {
         int potentialWeaponIndex = CurrentWeaponIndex + 1;

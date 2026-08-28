@@ -28,13 +28,7 @@ public class WeaponsToolbarBehavior : MonoBehaviour
     {
         for (int i = 0; i < SelectedIndicatorObjects.Length; i++)
         {
-            if (i == index)
-            {
-                SelectedIndicatorObjects[i].SetActive(true);
-            } else
-            {
-                SelectedIndicatorObjects[i].SetActive(false);
-            }
+            SelectedIndicatorObjects[i].SetActive(i == index);
         }
     }
 }
