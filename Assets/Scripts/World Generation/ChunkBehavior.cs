@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using UnityEngine;
 using Unity.Mathematics;
 using Unity.Collections;
@@ -24,20 +25,34 @@ public class ChunkBehavior : MonoBehaviour
         
         MeshRenderer meshRenderer = GetComponent<MeshRenderer>();
         meshRenderer.material = material;
+
+        await GetMeshAsync("custom mesh", volume, (mesh) =>
+        {
+            MeshFilter meshFilter = GetComponent<MeshFilter>();
+            meshFilter.mesh = mesh;
+        });
+    }
+
+    public static async Task GetMeshAsync(string meshName, Volume volume, Action<Mesh> callback)
+    {
+        if (volume.Length == 0) return;
         
-        Vector3 size = new Vector3(resolution, height, resolution);
+        Mesh.MeshDataArray meshDataArray = Mesh.AllocateWritableMeshData(1);
+
+        await Task.Factory.StartNew(() =>
+        {
+            Meshing.CreateChunkUInt32(volume, meshDataArray, Allocator.Persistent);
+        });
+
+        Vector3 size = new Vector3(volume.Resolution, volume.Height, volume.Resolution);
         Bounds bounds = new Bounds(size / 2, size);
 
-        Mesh.MeshDataArray meshDataArray = Mesh.AllocateWritableMeshData(1);
-        Meshing.CreateChunkUInt32(volume, meshDataArray, Allocator.Persistent);
         Mesh mesh = new Mesh
         {
-            name = "cube",
+            name = meshName,
             bounds = bounds,
         };
         Mesh.ApplyAndDisposeWritableMeshData(meshDataArray, mesh);
-        
-        MeshFilter meshFilter = GetComponent<MeshFilter>();
-        meshFilter.mesh = mesh;
+        callback(mesh);
     }
 }
