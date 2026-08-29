@@ -4,9 +4,10 @@ using Unity.Collections;
 
 public class ChunkBehavior : MonoBehaviour
 {
+    [SerializeField] private FastNoiseAsset noiseAsset;
     [SerializeField] private Material material;
     
-    private static int resolution = 16;
+    private static int resolution = 256;
     private static int height = 256;
 
     private void Start()
@@ -18,7 +19,7 @@ public class ChunkBehavior : MonoBehaviour
         Bounds bounds = new Bounds(size / 2, size);
 
         Mesh.MeshDataArray meshDataArray = Mesh.AllocateWritableMeshData(1);
-        Meshing.CreateChunkUInt32(resolution, height, meshDataArray, Allocator.Persistent);
+        Meshing.CreateChunkUInt32(noiseAsset, resolution, height, meshDataArray, Allocator.Persistent);
         Mesh mesh = new Mesh
         {
             name = "cube",

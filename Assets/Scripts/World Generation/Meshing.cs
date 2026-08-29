@@ -54,7 +54,7 @@ public static class Meshing
         indices.Dispose();
     }
 
-    public static void CreateChunkUInt32(int resolution, int height, Mesh.MeshDataArray meshDataArray,
+    public static void CreateChunkUInt32(FastNoiseAsset noiseAsset, int resolution, int height, Mesh.MeshDataArray meshDataArray,
         Allocator allocator
     )
     {
@@ -69,12 +69,25 @@ public static class Meshing
         for (int z = 0; z < resolution; z++)
         {
             float3 offset = new float3(x, y, z);
-            for (int side = 0; side < 6; side++) CreateQuadUInt32(vertices, indices, side, offset);
+            if (IsAir(noiseAsset, offset)) continue;
+            
+            for (int side = 0; side < 6; side++) 
+                if (NeighborIsAir(noiseAsset, offset, side)) CreateQuadUInt32(vertices, indices, side, offset);
         }
         
         CopyMeshUInt32(ref meshDataArray, ref indices, ref vertices, ref bounds);
         
         vertices.Dispose();
         indices.Dispose();
+    }
+
+    public static bool IsAir(FastNoiseAsset noiseAsset, float3 position)
+    {
+        return noiseAsset.GetNoise(position) < 0;
+    }
+
+    public static bool NeighborIsAir(FastNoiseAsset noiseAsset, float3 position, int side)
+    {
+        return IsAir(noiseAsset, position + Tables.Neighbors[side]);
     }
 }
