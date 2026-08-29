@@ -54,25 +54,23 @@ public static class Meshing
         indices.Dispose();
     }
 
-    public static void CreateChunkUInt32(FastNoiseAsset noiseAsset, int resolution, int height, Mesh.MeshDataArray meshDataArray,
-        Allocator allocator
-    )
+    public static void CreateChunkUInt32(Volume volume, Mesh.MeshDataArray meshDataArray, Allocator allocator)
     {
         NativeList<Vertex> vertices = new NativeList<Vertex>(allocator);
         NativeList<uint> indices = new NativeList<uint>(allocator);
         
-        Vector3 size = new Vector3(resolution, height, resolution);
+        Vector3 size = new Vector3(volume.Resolution, volume.Height, volume.Resolution);
         Bounds bounds = new Bounds(size / 2, size);
         
-        for (int x = 0; x < resolution; x++)
-        for (int y = 0; y < height; y++)
-        for (int z = 0; z < resolution; z++)
+        for (int x = 0; x < volume.Resolution; x++)
+        for (int y = 0; y < volume.Height; y++)
+        for (int z = 0; z < volume.Resolution; z++)
         {
             float3 offset = new float3(x, y, z);
-            if (IsAir(noiseAsset, offset)) continue;
+            if (IsAir(volume, x, y, z)) continue;
             
             for (int side = 0; side < 6; side++) 
-                if (NeighborIsAir(noiseAsset, offset, side)) CreateQuadUInt32(vertices, indices, side, offset);
+                if (NeighborIsAir(volume, x, y, z, side)) CreateQuadUInt32(vertices, indices, side, offset);
         }
         
         CopyMeshUInt32(ref meshDataArray, ref indices, ref vertices, ref bounds);
@@ -81,13 +79,22 @@ public static class Meshing
         indices.Dispose();
     }
 
-    public static bool IsAir(FastNoiseAsset noiseAsset, float3 position)
+    private static bool ValidBounds(int x, int y, int z)
     {
-        return noiseAsset.GetNoise(position) < 0;
+        return !(x < 0 || x >= ChunkBehavior.resolution ||
+                 y < 0 || y >= ChunkBehavior.height ||
+                 z < 0 || z >= ChunkBehavior.resolution);
     }
 
-    public static bool NeighborIsAir(FastNoiseAsset noiseAsset, float3 position, int side)
+    public static bool IsAir(Volume volume, int x, int y, int z)
     {
-        return IsAir(noiseAsset, position + Tables.Neighbors[side]);
+        if (ValidBounds(x, y, z)) return volume[x, y, z] == 0;
+        return true;
+    }
+
+    public static bool NeighborIsAir(Volume volume, int x, int y, int z, int side)
+    {
+        int3 offset = Tables.Neighbors[side];
+        return IsAir(volume, x + offset.x, y + offset.y, z + offset.z);
     }
 }

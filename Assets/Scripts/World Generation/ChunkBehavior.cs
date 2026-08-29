@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using Unity.Mathematics;
 using Unity.Collections;
 
 public class ChunkBehavior : MonoBehaviour
@@ -7,11 +8,20 @@ public class ChunkBehavior : MonoBehaviour
     [SerializeField] private FastNoiseAsset noiseAsset;
     [SerializeField] private Material material;
     
-    private static int resolution = 256;
-    private static int height = 256;
+    private Volume volume;
+    
+    public static int resolution = 16;
+    public static int height = 256;
 
-    private void Start()
+    private async void Start()
     {
+        volume = new Volume(resolution, height);
+        await volume.SetForeach((int3 localPosition) =>
+        {
+            if (noiseAsset.GetNoise(localPosition) < 0.0f) return 0;
+            return 1;
+        });
+        
         MeshRenderer meshRenderer = GetComponent<MeshRenderer>();
         meshRenderer.material = material;
         
@@ -19,7 +29,7 @@ public class ChunkBehavior : MonoBehaviour
         Bounds bounds = new Bounds(size / 2, size);
 
         Mesh.MeshDataArray meshDataArray = Mesh.AllocateWritableMeshData(1);
-        Meshing.CreateChunkUInt32(noiseAsset, resolution, height, meshDataArray, Allocator.Persistent);
+        Meshing.CreateChunkUInt32(volume, meshDataArray, Allocator.Persistent);
         Mesh mesh = new Mesh
         {
             name = "cube",
