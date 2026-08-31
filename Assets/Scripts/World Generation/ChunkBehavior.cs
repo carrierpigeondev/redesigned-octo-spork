@@ -7,7 +7,7 @@ using Unity.Collections;
 public class ChunkBehavior : MonoBehaviour
 {
     [SerializeField] private FastNoiseAsset noiseAsset;
-    [SerializeField] private Material material;
+    [SerializeField] private TextureManagerAsset textureManager;
     
     private Volume volume;
     
@@ -24,7 +24,7 @@ public class ChunkBehavior : MonoBehaviour
         });
         
         MeshRenderer meshRenderer = GetComponent<MeshRenderer>();
-        meshRenderer.material = material;
+        meshRenderer.material = textureManager.BlockMaterial;
 
         await GetMeshAsync("custom mesh", volume, (mesh) =>
         {

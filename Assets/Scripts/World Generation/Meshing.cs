@@ -29,24 +29,30 @@ public static class Meshing
         }, MeshUpdateFlags.DontRecalculateBounds);
     }
     
-    public static void CreateQuadUInt32(NativeList<Vertex> vertices, NativeList<uint> indices, int side, float3 offset)
+    public static void CreateQuadUInt32(byte blockID, NativeList<Vertex> vertices, NativeList<uint> indices, int side, float3 offset)
     {
         foreach (int quadIndex in QuadIndices) indices.Add((uint)vertices.Length + (uint)quadIndex);
-        
-        for (int vertexIndex = 0; vertexIndex < 4; vertexIndex++) vertices.Add(new Vertex {
-            position = Tables.Vertices[Tables.QuadVertices[side][vertexIndex]] + offset,
-            normal = Tables.Normals[side],
-        });
+
+        for (int vertexIndex = 0; vertexIndex < 4; vertexIndex++)
+        {
+            int a = vertexIndex >> 1 & 1; int b = vertexIndex & 1;
+            vertices.Add(new Vertex
+            {
+                position = Tables.Vertices[Tables.QuadVertices[side][vertexIndex]] + offset,
+                normal = Tables.Normals[side],
+                texCoord0 = new float3(a, b, blockID),
+            });
+        }
     }
 
-    public static void CreateCubeUInt32(Mesh.MeshDataArray meshDataArray, Allocator allocator)
+    public static void CreateCubeUInt32(byte blockID, Mesh.MeshDataArray meshDataArray, Allocator allocator)
     {
         NativeList<Vertex> vertices = new NativeList<Vertex>(allocator);
         NativeList<uint> indices = new NativeList<uint>(allocator);
 
         Bounds bounds = new Bounds(Vector3.one / 2, Vector3.one);
 
-        for (int side = 0; side < 6; side++) CreateQuadUInt32(vertices, indices, side, new float3(0, 0, 0));
+        for (int side = 0; side < 6; side++) CreateQuadUInt32(blockID, vertices, indices, side, new float3(0, 0, 0));
         
         CopyMeshUInt32(ref meshDataArray, ref indices, ref vertices, ref bounds);
 
@@ -67,10 +73,13 @@ public static class Meshing
         for (int z = 0; z < volume.Resolution; z++)
         {
             float3 offset = new float3(x, y, z);
+            byte blockID = volume[x, y, z];
+
             if (IsAir(volume, x, y, z)) continue;
             
             for (int side = 0; side < 6; side++) 
-                if (NeighborIsAir(volume, x, y, z, side)) CreateQuadUInt32(vertices, indices, side, offset);
+                if (NeighborIsAir(volume, x, y, z, side))
+                    CreateQuadUInt32(blockID, vertices, indices, side, offset);
         }
         
         CopyMeshUInt32(ref meshDataArray, ref indices, ref vertices, ref bounds);
