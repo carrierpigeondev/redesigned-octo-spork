@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Concurrent;
+using Unity.Collections;
 using UnityEngine;
 
 [Serializable]
@@ -10,12 +12,41 @@ public struct BlockType
 }
 
 [CreateAssetMenu(menuName = "TextureManager", fileName = "TextureManager")]
-public class TextureManagerAsset : ScriptableObject
+public class TextureManagerAsset : ScriptableObject, ISerializationCallbackReceiver
 {
     public BlockType[] BlockTypes;
     public Shader Shader;
     public int TextureSize = 16;
     public FilterMode FilterMode = FilterMode.Point;
+
+    private ConcurrentDictionary<string, byte> _blockTypes;
+    public byte this[string blockName]
+    {
+        get
+        {
+            if (_blockTypes.TryGetValue(blockName, out byte index)) return index;
+            else
+            {
+                Debug.LogWarning($"no block of name {blockName}");
+                return 0;
+            }
+        }
+    }
+
+    public void OnBeforeSerialize() { }
+    public void OnAfterDeserialize()
+    {
+        _blockTypes = new ConcurrentDictionary<string, byte>();
+        _blockTypes = GetBlockMap();
+    }
+
+    public ConcurrentDictionary<string, byte> GetBlockMap()
+    {
+        for (int i = 0; i < BlockTypes.Length; i++)
+            _blockTypes.TryAdd(BlockTypes[i].NameID, (byte)i);
+
+        return _blockTypes;
+    }
 
     public Material BlockMaterial
     {

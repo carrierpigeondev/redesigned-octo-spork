@@ -19,8 +19,16 @@ public class ChunkBehavior : MonoBehaviour
         volume = new Volume(resolution, height);
         await volume.SetForeach((int3 localPosition) =>
         {
-            if (noiseAsset.GetNoise(localPosition) < 0.0f) return 0;
-            return 1;
+            float3 position = localPosition;
+
+            // rule: generate floor and ceiling
+            if (position.y == 0 || position.y == 255) return textureManager["stone"];
+
+            // rule: cave generation
+            if (noiseAsset.GetNoise(position) < 0.0f) return textureManager["air"];
+            
+            // default
+            return textureManager["dirt"];
         });
         
         MeshRenderer meshRenderer = GetComponent<MeshRenderer>();
