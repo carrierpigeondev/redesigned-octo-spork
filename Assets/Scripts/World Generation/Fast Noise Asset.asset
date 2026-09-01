@@ -16,7 +16,7 @@ MonoBehaviour:
   rotationType3D: 0
   seed: 82826
   frequency: 0.01
-  fractalType: 2
+  fractalType: 3
   octaves: 3
   lacunarity: 2
   gain: 0.5
