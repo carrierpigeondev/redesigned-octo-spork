@@ -19,7 +19,7 @@ public struct Volume
 
         this.resolution = resolution;
         this.height = height;
-        this.data = new byte[resolution * resolution * height];
+        this.data = new byte[(resolution + 2) * (resolution + 2) * (height + 2)];
     }
     
     public Volume(int resolution) : this(resolution, resolution) {}
@@ -29,25 +29,25 @@ public struct Volume
         get
         {
             #if UNITY_EDITOR
-            CheckBounds(x, y, z);
+            CheckBounds(x + 1, y + 1, z + 1);
             #endif
             
-            return data[XyzToIndex(x, y, z, resolution, height)];
+            return data[XyzToIndex(x + 1, y + 1, z + 1, resolution + 2, height + 2)];
         }
         set
         {
             #if UNITY_EDITOR
-            CheckBounds(x, y, z);
+            CheckBounds(x + 1, y + 1, z + 1);
             #endif
             
-            data[XyzToIndex(x, y, z, resolution, height)] = value;
+            data[XyzToIndex(x + 1, y + 1, z + 1, resolution + 2, height + 2)] = value;
         }
     }
     
     #if UNITY_EDITOR
     private void CheckBounds(int x, int y, int z)
     {
-        if (x < 0 || x >= resolution || y < 0 || y >= height || z < 0 || z >= resolution)
+        if (x < 0 || x >= resolution + 2 || y < 0 || y >= height + 2 || z < 0 || z >= resolution + 2)
             throw new IndexOutOfRangeException($"Index [{x},{y},{z}] out of range [{resolution}, {height}, {resolution}]");
     }
     #endif
@@ -65,11 +65,11 @@ public struct Volume
 
         await Task.Factory.StartNew(() =>
         {
-            for (int x = 0; x < volume.Resolution; x++)
-            for (int y = 0; y < volume.Height; y++)
-            for (int z = 0; z < volume.Resolution; z++)
+            for (int x = -1; x < volume.Resolution + 1; x++)
+            for (int y = -1; y < volume.Height + 1; y++)
+            for (int z = -1; z < volume.Resolution + 1; z++)
             {
-                volume.data[XyzToIndex(x, y, z, volume.Resolution, volume.Height)] = BlockAt(new int3(x, y, z));
+                volume.data[XyzToIndex(x + 1, y + 1, z + 1, volume.Resolution + 2, volume.Height + 2)] = BlockAt(new int3(x, y, z));
             }
         });
     }

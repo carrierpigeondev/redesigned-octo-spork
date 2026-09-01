@@ -3,41 +3,52 @@ using System.Threading.Tasks;
 using UnityEngine;
 using Unity.Mathematics;
 using Unity.Collections;
+using UnityEngine.Serialization;
 
+[RequireComponent(typeof(MeshFilter), typeof(MeshRenderer), typeof(MeshCollider))]
 public class ChunkBehavior : MonoBehaviour
 {
-    [SerializeField] private FastNoiseAsset noiseAsset;
-    [SerializeField] private TextureManagerAsset textureManager;
+    // do need to be public because set by World
+    public FastNoiseAsset NoiseAsset;
+    public TextureManagerAsset TextureManager;
     
     private Volume volume;
     
-    public static int resolution = 16;
-    public static int height = 256;
+    public static int Resolution = 16;
+    public static int Height = 256;
 
     private async void Start()
     {
-        volume = new Volume(resolution, height);
+        float3 chunkPosition = transform.position;
+        
+        volume = new Volume(Resolution, Height);
         await volume.SetForeach((int3 localPosition) =>
         {
-            float3 position = localPosition;
+            float3 position = localPosition + chunkPosition;
 
-            // rule: generate floor and ceiling
-            if (position.y == 0 || position.y == 255) return textureManager["stone"];
+            if (position.y < 0 || position.y >= Height)
+                return TextureManager["air"];
+            
+            // rule: generate floor
+            if (position.y == 0) return TextureManager["stone"];
 
             // rule: cave generation
-            if (noiseAsset.GetNoise(position) < 0.0f) return textureManager["air"];
+            if (NoiseAsset.GetNoise(position) < 0.0f) return TextureManager["air"];
             
             // default
-            return textureManager["dirt"];
+            return TextureManager["dirt"];
         });
         
         MeshRenderer meshRenderer = GetComponent<MeshRenderer>();
-        meshRenderer.material = textureManager.BlockMaterial;
+        meshRenderer.material = TextureManager.BlockMaterial;
+        meshRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
 
         await GetMeshAsync("custom mesh", volume, (mesh) =>
         {
             MeshFilter meshFilter = GetComponent<MeshFilter>();
-            meshFilter.mesh = mesh;
+            MeshCollider meshCollider = GetComponent<MeshCollider>();
+            meshFilter.sharedMesh = mesh;
+            meshCollider.sharedMesh = mesh;
         });
     }
 

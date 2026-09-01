@@ -88,17 +88,9 @@ public static class Meshing
         indices.Dispose();
     }
 
-    private static bool ValidBounds(int x, int y, int z)
-    {
-        return !(x < 0 || x >= ChunkBehavior.resolution ||
-                 y < 0 || y >= ChunkBehavior.height ||
-                 z < 0 || z >= ChunkBehavior.resolution);
-    }
-
     public static bool IsAir(Volume volume, int x, int y, int z)
     {
-        if (ValidBounds(x, y, z)) return volume[x, y, z] == 0;
-        return true;
+        return volume[x, y, z] == 0;
     }
 
     public static bool NeighborIsAir(Volume volume, int x, int y, int z, int side)
