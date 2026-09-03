@@ -14,7 +14,7 @@ public class ChunkBehavior : MonoBehaviour
     
     private Volume volume;
     
-    public static int Resolution = 16;
+    public static int Resolution = 256;
     public static int Height = 256;
 
     private async void Start()
@@ -28,7 +28,9 @@ public class ChunkBehavior : MonoBehaviour
 
             if (position.y < 0 || position.y >= Height)
                 return TextureManager["air"];
-            
+
+            if (position.y == 100) return TextureManager["stone"];
+
             // rule: generate floor
             if (position.y == 0) return TextureManager["stone"];
 

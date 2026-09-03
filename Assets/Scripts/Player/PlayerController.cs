@@ -37,10 +37,12 @@ public class PlayerController : MonoBehaviour
         inputs.Player.Look.performed += OnLook;
         inputs.Player.Jump.performed += OnJump;
         inputs.UI.ScrollWheel.performed += OnScrollWheelPerformed;
+        inputs.Player.Attack.performed += OnFire;
     }
 
     private void OnDisable()
     {
+        inputs.Player.Attack.performed -= OnFire;
         inputs.UI.ScrollWheel.performed -= OnScrollWheelPerformed;
         inputs.Player.Jump.performed -= OnJump;
         inputs.Player.Look.performed -= OnLook;
@@ -92,5 +94,10 @@ public class PlayerController : MonoBehaviour
     {
         if (!controller.isGrounded) return;
         verticalVelocity += jumpVelocity;
+    }
+
+    private void OnFire(InputAction.CallbackContext context)
+    {
+        weapons.FireCurrent();
     }
 }

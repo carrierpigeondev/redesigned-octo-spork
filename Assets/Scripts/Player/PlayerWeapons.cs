@@ -12,8 +12,6 @@ public class PlayerWeapons : MonoBehaviour
 
     [SerializeField] private WeaponsToolbarBehavior toolbarRef;
 
-    private InputSystem_Actions inputs;
-
     private void Start()
     {
         toolbarRef.ToolbarIndicatorSet(CurrentWeaponIndex); // do once on start
@@ -39,5 +37,10 @@ public class PlayerWeapons : MonoBehaviour
         }
         CurrentWeaponIndex = potentialWeaponsIndex;
         toolbarRef.ToolbarIndicatorSet(CurrentWeaponIndex);
+    }
+
+    public void FireCurrent()
+    {
+        WeaponsInToolbar[CurrentWeaponIndex].Fire();
     }
 }

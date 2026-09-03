@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -16,4 +17,14 @@ public static class WeaponExtensions
     {
         return UnityResourceLoader.WeaponToolbarTextures[(int)weapon];
     }
+
+    public static void Fire(this Weapon weapon)
+    {
+        Debug.Log($"fired a weapon named {Enum.GetName(typeof(Weapon), weapon)}");
+    }
+}
+
+struct WeaponFireInformation
+{
+    float damage;
 }
