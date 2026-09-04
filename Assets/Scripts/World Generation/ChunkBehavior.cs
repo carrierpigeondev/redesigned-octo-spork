@@ -14,8 +14,8 @@ public class ChunkBehavior : MonoBehaviour
     
     private Volume volume;
     
-    public static int Resolution = 256;
-    public static int Height = 256;
+    public static int Resolution = 16;
+    public static int Height = 96;
 
     private async void Start()
     {

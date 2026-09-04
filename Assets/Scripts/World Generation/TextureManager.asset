@@ -15,8 +15,8 @@ MonoBehaviour:
   BlockTypes:
   - NameID: air
     Texture: {fileID: 2800000, guid: f5cc568008296704c91f56e20e2e8bdb, type: 3}
-  - NameID: stone_2
-    Texture: {fileID: 2800000, guid: f5cc568008296704c91f56e20e2e8bdb, type: 3}
+  - NameID: stone
+    Texture: {fileID: 2800000, guid: 80a502ba42150843d95461765a9d536b, type: 3}
   - NameID: dirt
     Texture: {fileID: 2800000, guid: 80a502ba42150843d95461765a9d536b, type: 3}
   - NameID: stone

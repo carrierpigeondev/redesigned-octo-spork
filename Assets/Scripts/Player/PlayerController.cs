@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -19,7 +20,9 @@ public class PlayerController : MonoBehaviour
 
     private float pitch = 0.0f;
     private float verticalVelocity = 0.0f;
-    
+
+    private List<Action> updateActions = new List<Action>();
+
     private void Awake()
     {
         inputs = new InputSystem_Actions();
@@ -51,10 +54,24 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        CalculateGravity();
-        HandleMovement(); // doesn't work as a discrete call on .performed
+        for (int i = 0; i < updateActions.Count; i++)
+        {
+            updateActions[i]();
+        }
     }
-    
+
+    public void AddUpdateActions()
+    {
+        updateActions.Add(HandleMovement);
+        updateActions.Add(CalculateGravity);
+    }
+
+    public void RemoveUpdateActions()
+    {
+        updateActions.Remove(HandleMovement);
+        updateActions.Remove(CalculateGravity);
+    }
+
     private void HandleMovement()
     {
         Vector2 moveInput = inputs.Player.Move.ReadValue<Vector2>();
