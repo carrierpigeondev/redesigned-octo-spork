@@ -15,10 +15,12 @@ MonoBehaviour:
   BlockTypes:
   - NameID: air
     Texture: {fileID: 2800000, guid: f5cc568008296704c91f56e20e2e8bdb, type: 3}
-  - NameID: stone
+  - NameID: stone_2
     Texture: {fileID: 2800000, guid: f5cc568008296704c91f56e20e2e8bdb, type: 3}
   - NameID: dirt
-    Texture: {fileID: 2800000, guid: b95ee2549a4e79f4794c1adaccb5f512, type: 3}
+    Texture: {fileID: 2800000, guid: 80a502ba42150843d95461765a9d536b, type: 3}
+  - NameID: stone
+    Texture: {fileID: 2800000, guid: 80a502ba42150843d95461765a9d536b, type: 3}
   Shader: {fileID: -6465566751694194690, guid: f3602b2c6456bc149a9871478a3d5835, type: 3}
   TextureSize: 32
   FilterMode: 0
