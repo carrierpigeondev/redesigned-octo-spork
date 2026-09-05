@@ -58,12 +58,12 @@ public struct Volume
         return z * resolution * height + y * resolution + x;
     }
 
-    public async Task SetForeach(Func<int3, byte> BlockAt)
+    public Task SetForeach(Func<int3, byte> BlockAt)
     {
-        if (data.Length == 0) return;
+        if (data.Length == 0) return Task.CompletedTask;
         Volume volume = this;
 
-        await Task.Factory.StartNew(() =>
+        return Task.Run(() =>
         {
             for (int x = -1; x < volume.Resolution + 1; x++)
             for (int y = -1; y < volume.Height + 1; y++)

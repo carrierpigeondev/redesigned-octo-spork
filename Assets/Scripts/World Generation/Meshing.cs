@@ -2,6 +2,7 @@ using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.UIElements;
 
 public static class Meshing
 {
@@ -33,14 +34,18 @@ public static class Meshing
     {
         foreach (int quadIndex in QuadIndices) indices.Add((uint)vertices.Length + (uint)quadIndex);
 
+        int2 uvAxes = Tables.UVAxes[side];
+        
         for (int vertexIndex = 0; vertexIndex < 4; vertexIndex++)
         {
-            int a = vertexIndex >> 1 & 1; int b = vertexIndex & 1;
+            float3 voxelVertex = Tables.Vertices[Tables.QuadVertices[side][vertexIndex]] + offset;
+            float2 uv = new float2(voxelVertex[uvAxes.x], voxelVertex[uvAxes.y]) * ChunkBehavior.BlockSize;
+            
             vertices.Add(new Vertex
             {
-                position = Tables.Vertices[Tables.QuadVertices[side][vertexIndex]] + offset,
+                position = voxelVertex * ChunkBehavior.BlockSize,
                 normal = Tables.Normals[side],
-                texCoord0 = new float3(a, b, blockID),
+                texCoord0 = new float3(uv, blockID)
             });
         }
     }
@@ -65,7 +70,7 @@ public static class Meshing
         NativeList<Vertex> vertices = new NativeList<Vertex>(allocator);
         NativeList<uint> indices = new NativeList<uint>(allocator);
         
-        Vector3 size = new Vector3(volume.Resolution, volume.Height, volume.Resolution);
+        Vector3 size = new Vector3(volume.Resolution, volume.Height, volume.Resolution) * ChunkBehavior.BlockSize;
         Bounds bounds = new Bounds(size / 2, size);
         
         for (int x = 0; x < volume.Resolution; x++)

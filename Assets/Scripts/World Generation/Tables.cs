@@ -76,4 +76,17 @@ public static class Tables
             new int3(0, 0,  1),
             new int3(0, 0, -1),
         };
+        
+        // for partial tex
+        public static readonly int2[] UVAxes =
+        {
+            new int2(2, 1), // right: z, y
+            new int2(2, 1), // left:  z, y
+
+            new int2(0, 2), // up:    x, z
+            new int2(0, 2), // down:  x, z
+
+            new int2(0, 1), // front: x, y
+            new int2(0, 1), // back:  x, y
+        };
     }

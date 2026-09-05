@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using Unity.Mathematics;
+using Random = System.Random;
 
 [CreateAssetMenu(menuName =  "Noise/Fast Noise Asset", fileName = "Fast Noise Asset")]
 public class FastNoiseAsset : ScriptableObject
@@ -8,7 +9,7 @@ public class FastNoiseAsset : ScriptableObject
     [Header("General Settings")]
     [SerializeField] private FastNoiseLite.NoiseType noiseType = FastNoiseLite.NoiseType.OpenSimplex2;
     [SerializeField] private FastNoiseLite.RotationType3D rotationType3D = FastNoiseLite.RotationType3D.None;
-    [SerializeField] private int seed = 082826; // today :D
+    [SerializeField] private int seed = 082826; // today :D -- just a placeholder, RandomizeSeed randomizes it
     [SerializeField] private float frequency = 0.01f;
     
     [Header("Fractal")]
@@ -37,6 +38,7 @@ public class FastNoiseAsset : ScriptableObject
     private void OnEnable()
     {
         fastNoiseInstance = new FastNoiseLite();
+        RandomizeSeed();
         SetNoiseSettings(ref fastNoiseInstance);
     }
 
@@ -45,6 +47,13 @@ public class FastNoiseAsset : ScriptableObject
         FastNoiseLite noise = new FastNoiseLite();
         SetNoiseSettings(ref noise);
         return noise;
+    }
+
+    private void RandomizeSeed()
+    {
+        // pseudorandomness is ok here since it doesnt need to be secure
+        Random random = new Random();
+        seed = random.Next();
     }
 
     public void SetNoiseSettings(ref FastNoiseLite instance)

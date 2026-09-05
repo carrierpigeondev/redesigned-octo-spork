@@ -14,58 +14,67 @@ public class ChunkBehavior : MonoBehaviour
     
     private Volume volume;
     
-    public static int Resolution = 16;
-    public static int Height = 96;
+    public static int Resolution = 32;
+    public static int Height = 192;
+    public static float BlockSize = 0.5f;
 
-    private async void Start()
+    public async Task GenerateAsync(Material blockMaterial)
     {
         float3 chunkPosition = transform.position;
         
+        // for performance, rather than doing lookups for every single texturemanager index
+        // assign them to bytes outside of the loop
+        byte blockAir = TextureManager["air"];
+        byte blockStone = TextureManager["stone"];
+        byte blockDirt = TextureManager["dirt"];
+        
         volume = new Volume(Resolution, Height);
+        
         await volume.SetForeach((int3 localPosition) =>
         {
-            float3 position = localPosition + chunkPosition;
-
-            if (position.y < 0 || position.y >= Height)
-                return TextureManager["air"];
-
-            if (position.y == 100) return TextureManager["stone"];
+            if (localPosition.y < 0 || localPosition.y >= Height)
+                return blockAir;
 
             // rule: generate floor
-            if (position.y == 0) return TextureManager["stone"];
+            if (localPosition.y == 0) return blockStone;
 
+            float3 worldPosition = chunkPosition + (float3)localPosition * BlockSize;
+            
             // rule: cave generation
-            if (NoiseAsset.GetNoise(position) < 0.0f) return TextureManager["air"];
+            if (NoiseAsset.GetNoise(worldPosition) < 0.0f) return blockAir;
             
             // default
-            return TextureManager["dirt"];
+            return blockDirt;
         });
         
         MeshRenderer meshRenderer = GetComponent<MeshRenderer>();
-        meshRenderer.material = TextureManager.BlockMaterial;
+        meshRenderer.sharedMaterial = blockMaterial;
         meshRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
 
-        await GetMeshAsync("custom mesh", volume, (mesh) =>
-        {
-            MeshFilter meshFilter = GetComponent<MeshFilter>();
-            MeshCollider meshCollider = GetComponent<MeshCollider>();
-            meshFilter.sharedMesh = mesh;
-            meshCollider.sharedMesh = mesh;
-        });
+        Mesh mesh = await GetMeshAsync(
+            $"ChunkMesh_{transform.position.x}_{transform.position.z}",
+            volume
+        );
+        
+        // component handling outside of async
+        MeshFilter meshFilter = GetComponent<MeshFilter>();
+        meshFilter.sharedMesh = mesh;
+        MeshCollider meshCollider = GetComponent<MeshCollider>();
+        meshCollider.sharedMesh = mesh;
     }
 
-    public static async Task GetMeshAsync(string meshName, Volume volume, Action<Mesh> callback)
+    public static async Task<Mesh> GetMeshAsync(string meshName, Volume volume)
     {
-        if (volume.Length == 0) return;
+        if (volume.Length == 0) return null;
         
         Mesh.MeshDataArray meshDataArray = Mesh.AllocateWritableMeshData(1);
 
-        await Task.Factory.StartNew(() =>
+        await Task.Run(() =>
         {
             Meshing.CreateChunkUInt32(volume, meshDataArray, Allocator.Persistent);
         });
 
-        Vector3 size = new Vector3(volume.Resolution, volume.Height, volume.Resolution);
+        Vector3 size = new Vector3(volume.Resolution, volume.Height, volume.Resolution) * BlockSize;
         Bounds bounds = new Bounds(size / 2, size);
 
         Mesh mesh = new Mesh
@@ -74,6 +83,7 @@ public class ChunkBehavior : MonoBehaviour
             bounds = bounds,
         };
         Mesh.ApplyAndDisposeWritableMeshData(meshDataArray, mesh);
-        callback(mesh);
+
+        return mesh;
     }
 }
