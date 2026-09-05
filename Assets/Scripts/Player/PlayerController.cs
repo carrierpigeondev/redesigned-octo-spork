@@ -115,6 +115,6 @@ public class PlayerController : MonoBehaviour
 
     private void OnFire(InputAction.CallbackContext context)
     {
-        weapons.FireCurrent();
+        weapons.FireCurrent(camera.transform.position, camera.transform.forward);
     }
 }

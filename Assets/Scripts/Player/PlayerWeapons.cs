@@ -39,8 +39,8 @@ public class PlayerWeapons : MonoBehaviour
         toolbarRef.ToolbarIndicatorSet(CurrentWeaponIndex);
     }
 
-    public void FireCurrent()
+    public void FireCurrent(Vector3 origin, Vector3 direction)
     {
-        WeaponsInToolbar[CurrentWeaponIndex].Fire();
+        WeaponsInToolbar[CurrentWeaponIndex].Fire(origin, direction);
     }
 }
