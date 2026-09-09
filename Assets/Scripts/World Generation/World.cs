@@ -11,6 +11,7 @@ public class World : MonoBehaviour
     
     [SerializeField] private TextureManagerAsset textureManager;
     [SerializeField] private FastNoiseAsset noiseAsset;
+    [SerializeField] private FastNoiseAsset strataNoiseAsset;
     [SerializeField] private PlayerController playerControllerReference;
 
     private Dictionary<Vector3Int, ChunkBehavior> chunks = new Dictionary<Vector3Int, ChunkBehavior>();
@@ -60,7 +61,8 @@ public class World : MonoBehaviour
         ChunkBehavior chunkBehavior = chunkObject.AddComponent<ChunkBehavior>();
 
         chunkBehavior.TextureManager = textureManager;
-        chunkBehavior.NoiseAsset = noiseAsset;
+        chunkBehavior.PrimaryNoiseAsset = noiseAsset;
+        chunkBehavior.StrataNoiseAsset = strataNoiseAsset;
         chunks.Add(chunkPosition, chunkBehavior);
 
         return chunkBehavior;

@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b61d2ce2b35f400bb514ab9a3a509f1f, type: 3}
   m_Name: Fast Noise Asset
   m_EditorClassIdentifier: Assembly-CSharp::FastNoiseAsset
-  noiseType: 0
+  noiseType: 1
   rotationType3D: 0
-  seed: 82826
+  seed: 1429647839
   frequency: 0.01
   fractalType: 3
   octaves: 3

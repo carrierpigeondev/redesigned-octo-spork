@@ -9,7 +9,9 @@ using UnityEngine.Serialization;
 public class ChunkBehavior : MonoBehaviour
 {
     // do need to be public because set by World
-    public FastNoiseAsset NoiseAsset;
+    public FastNoiseAsset PrimaryNoiseAsset;
+    public FastNoiseAsset StrataNoiseAsset;
+    
     public TextureManagerAsset TextureManager;
     
     private Volume volume;
@@ -25,26 +27,36 @@ public class ChunkBehavior : MonoBehaviour
         // for performance, rather than doing lookups for every single texturemanager index
         // assign them to bytes outside of the loop
         byte blockAir = TextureManager["air"];
-        byte blockStone = TextureManager["stone"];
-        byte blockDirt = TextureManager["dirt"];
+        byte blockRegolith = TextureManager["regolith"];
+        byte blockBreccia = TextureManager["breccia"];
+        byte blockAnorthosite = TextureManager["anorthosite"];
         
         volume = new Volume(Resolution, Height);
         
         await volume.SetForeach((int3 localPosition) =>
         {
+            // rule: fill in blocks above and below world as air
             if (localPosition.y < 0 || localPosition.y >= Height)
                 return blockAir;
 
             // rule: generate floor
-            if (localPosition.y == 0) return blockStone;
+            if (localPosition.y == 0) return blockAnorthosite;
 
+            
             float3 worldPosition = chunkPosition + (float3)localPosition * BlockSize;
             
             // rule: cave generation
-            if (NoiseAsset.GetNoise(worldPosition) < 0.0f) return blockAir;
+            if (PrimaryNoiseAsset.GetNoise(worldPosition) < 0.0f) return blockAir;
+            
+            // rule: strata running throughout terrain
+            if (StrataNoiseAsset.GetNoise(worldPosition) > 0.0f)
+            {
+                if (localPosition.y >= 80) return blockRegolith;
+                if (localPosition.y <= 30) return blockAnorthosite;
+            };
             
             // default
-            return blockDirt;
+            return blockBreccia;
         });
         
         MeshRenderer meshRenderer = GetComponent<MeshRenderer>();
