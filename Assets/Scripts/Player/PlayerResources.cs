@@ -29,8 +29,8 @@ public class PlayerResources : MonoBehaviour
     public bool WillModifyResultLessThanZero(Resource resource, int amount)
     {
         int resourceAmount = GetResource(resource);
-        if (resourceAmount + amount < 0) { return false; }
-        return true;
+        if (resourceAmount + amount < 0) { return true; }
+        return false;
     }
 
     public void ModifyResource(Resource resource, int amount)

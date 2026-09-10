@@ -11,6 +11,11 @@ public class TurretEnemyBehavior : BaseEnemyBehaviour
         LookAt(this.target.position);
     }
 
+    internal override void SetResourceDictionary()
+    {
+        resourceDictionary.Add(Resource.Ruby, 5);
+    }
+
     internal override void LookAt(Vector3 position)
     {
         // normal rotation doesnt work the same for a turret

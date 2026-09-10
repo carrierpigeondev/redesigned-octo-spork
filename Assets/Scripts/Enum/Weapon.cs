@@ -24,26 +24,30 @@ public static class WeaponExtensions
         
         Debug.Log($"fired a weapon named {Enum.GetName(typeof(Weapon), weapon)}");
 
-        WeaponFireInformation info = new WeaponFireInformation(100, 2048);
+        WeaponFireInformation info = new WeaponFireInformation(10, 2048);
         if (Physics.Raycast(origin, direction, out RaycastHit hit, info.Distance))
         {
-            Debug.DrawRay(origin, direction * hit.distance, Color.red);
             Debug.Log("hit " + hit.transform.name);
+
+            BaseEnemyBehaviour enemyBehaviour = hit.transform.GetComponentInParent<BaseEnemyBehaviour>();
+            if (enemyBehaviour) {
+                InteractWithEnemy(enemyBehaviour, info);
+            }
         }
-        else
-        {
-            Debug.DrawRay(origin, direction * info.Distance, Color.white);
-            Debug.Log("hit null");
-        }
+    }
+
+    private static void InteractWithEnemy(BaseEnemyBehaviour enemyBehaviour, WeaponFireInformation info)
+    {
+        enemyBehaviour.TakeDamage(info.Damage);
     }
 }
 
 struct WeaponFireInformation
 {
-    public float Damage;
+    public int Damage;
     public float Distance;
     
-    public WeaponFireInformation(float damage, float distance)
+    public WeaponFireInformation(int damage, float distance)
     {
         Damage = damage;
         Distance = distance;
