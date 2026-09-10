@@ -6,14 +6,17 @@ public abstract class BaseEnemyBehaviour : MonoBehaviour
     public int MaxHealth;
     public int CurrentHealth;
     public float GeneralRange;
-    public Transform target;
-    [SerializeField] private PlayerResources playerResources;
+    [SerializeField] internal Transform target;
+    [SerializeField] internal PlayerResources playerResources;
     internal Dictionary<Resource, int> resourceDictionary = new Dictionary<Resource, int>(); // must be overridden in code and not inspector bc not serializeable
 
     private void Start()
     {
         CurrentHealth = MaxHealth;
         SetResourceDictionary();
+
+        target = EnemyPlayerInteractionInterfaceBehavior.playerTransform;
+        playerResources = EnemyPlayerInteractionInterfaceBehavior.playerResources;
     }
 
     private void Update()
