@@ -14,9 +14,7 @@ public abstract class BaseEnemyBehaviour : MonoBehaviour
     {
         CurrentHealth = MaxHealth;
         SetResourceDictionary();
-
-        target = EnemyPlayerInteractionInterfaceBehavior.playerTransform;
-        playerResources = EnemyPlayerInteractionInterfaceBehavior.playerResources;
+        SetInternalPlayerValues();
     }
 
     private void Update()
@@ -37,6 +35,12 @@ public abstract class BaseEnemyBehaviour : MonoBehaviour
     public virtual bool IsWithinGeneralRange(Vector3 position)
     {
         return Vector3.Distance(position, this.transform.position) <= GeneralRange;
+    }
+
+    internal virtual void SetInternalPlayerValues()
+    {
+        target = EnemyPlayerInteractionInterfaceBehavior.playerTransform;
+        playerResources = EnemyPlayerInteractionInterfaceBehavior.playerResources;
     }
 
     internal virtual void SetResourceDictionary()
