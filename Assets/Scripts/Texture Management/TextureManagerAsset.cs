@@ -62,7 +62,7 @@ public class TextureManagerAsset : ScriptableObject, ISerializationCallbackRecei
     {
         if (BlockTypes == null || BlockTypes.Length == 0)
         {
-            Debug.LogError("No block typoes defined in TextureManager");
+            Debug.LogError("No block types defined in TextureManager");
             return null;
         }
 
@@ -114,4 +114,16 @@ public class TextureManagerAsset : ScriptableObject, ISerializationCallbackRecei
         RenderTexture.ReleaseTemporary(rt);
         return convertedTexture;
     }
+
+    public Texture2D GetTexture(byte blockID)
+    {
+        if (blockID >= BlockTypes.Length)
+        {
+            Debug.LogWarning($"Invalid block ID: {blockID}");
+            return null;
+        }
+
+        return BlockTypes[blockID].Texture;
+    }
+
 }
