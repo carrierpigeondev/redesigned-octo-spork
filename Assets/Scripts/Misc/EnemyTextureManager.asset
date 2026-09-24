@@ -15,19 +15,19 @@ MonoBehaviour:
   BlockTypes:
   - NameID: bill_0
     Texture: {fileID: 2800000, guid: 17dc57173ad439c4ab033408e55099dd, type: 3}
-  - NameID: bill_7
+  - NameID: bill_1
     Texture: {fileID: 2800000, guid: db58d146231c439479bb7eef70aa3a58, type: 3}
-  - NameID: bill_6
+  - NameID: bill_2
     Texture: {fileID: 2800000, guid: 68c4fd898c37f4b43a487fa43b473d6d, type: 3}
-  - NameID: bill_5
+  - NameID: bill_3
     Texture: {fileID: 2800000, guid: 5ca80ab7a88762d489c0ff2c2068b173, type: 3}
   - NameID: bill_4
     Texture: {fileID: 2800000, guid: e1d5fb88716ac26479a28f01e9196411, type: 3}
-  - NameID: bill_3
+  - NameID: bill_5
     Texture: {fileID: 2800000, guid: 3d5db16bfa621ac4789ad853f332d4f4, type: 3}
-  - NameID: bill_2
+  - NameID: bill_6
     Texture: {fileID: 2800000, guid: 559916f3bb8f9c945a4ad5bc64071b41, type: 3}
-  - NameID: bill_1
+  - NameID: bill_7
     Texture: {fileID: 2800000, guid: a23f4bea9323a574b90cea7c9e5630d8, type: 3}
   Shader: {fileID: -6465566751694194690, guid: f3602b2c6456bc149a9871478a3d5835, type: 3}
   TextureSize: 32

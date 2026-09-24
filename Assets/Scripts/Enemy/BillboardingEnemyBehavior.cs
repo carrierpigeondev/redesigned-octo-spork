@@ -8,8 +8,8 @@ public class BillboardingEnemyBehavior : BaseEnemyBehaviour
     [SerializeField] private TextureManagerAsset textureManager;
 
     [SerializeField] private string namePrefix;
+    [SerializeField] private float lookAngle; // internal way that it faces
     private byte textureIndex;
-    private float rot = 360f;
 
     internal override void OnEnemyUpdate()
     {
@@ -29,11 +29,18 @@ public class BillboardingEnemyBehavior : BaseEnemyBehaviour
 
     internal override void LookAt(Vector3 position)
     {
-        ChangeSprite(Vector3.Angle(Vector3.forward, target.position - this.transform.position));
-        
-        Vector3 dir = target.position - this.transform.position;
+        //ChangeSprite(Vector3.Angle(Vector3.forward, target.position - this.transform.position));
+
+        // handle simple rotation, this doesn't need to know anything about the internal look angle
+        Vector3 dir = target.position - billboardImage.transform.position;
         Quaternion lookRotation = Quaternion.LookRotation(dir);
         billboardImage.transform.rotation = Quaternion.Euler(0f, lookRotation.eulerAngles.y, 0f);
+
+        float theta = target.rotation.eulerAngles.y - lookAngle;
+        Debug.Log(theta);
+        ChangeSprite(theta);
+
+        //billboardImage.transform.rotation = Quaternion.Euler(0f, lookAngle, 0f);
 
         // doesnt behave properly
         //
