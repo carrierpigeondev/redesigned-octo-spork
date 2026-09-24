@@ -41,10 +41,12 @@ public class PlayerController : MonoBehaviour
         inputs.Player.Jump.performed += OnJump;
         inputs.UI.ScrollWheel.performed += OnScrollWheelPerformed;
         inputs.Player.Attack.performed += OnFire;
+        inputs.Player.Crouch.performed += OnOpenResourceUI;
     }
 
     private void OnDisable()
     {
+        inputs.Player.Crouch.performed -= OnOpenResourceUI;
         inputs.Player.Attack.performed -= OnFire;
         inputs.UI.ScrollWheel.performed -= OnScrollWheelPerformed;
         inputs.Player.Jump.performed -= OnJump;
@@ -116,5 +118,10 @@ public class PlayerController : MonoBehaviour
     private void OnFire(InputAction.CallbackContext context)
     {
         weapons.FireCurrent(camera.transform.position, camera.transform.forward);
+    }
+
+    private void OnOpenResourceUI(InputAction.CallbackContext context)
+    {
+
     }
 }

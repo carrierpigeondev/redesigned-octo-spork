@@ -24,30 +24,20 @@ public class BillboardingEnemyBehavior : BaseEnemyBehaviour
     internal override void SetInternalPlayerValues()
     {
         base.SetInternalPlayerValues();
-        //playerCamera = EnemyPlayerInteractionInterfaceBehavior.playerCamera;
     }
 
     internal override void LookAt(Vector3 position)
     {
-        //ChangeSprite(Vector3.Angle(Vector3.forward, target.position - this.transform.position));
-
         // handle simple rotation, this doesn't need to know anything about the internal look angle
         Vector3 dir = target.position - billboardImage.transform.position;
         Quaternion lookRotation = Quaternion.LookRotation(dir);
         billboardImage.transform.rotation = Quaternion.Euler(0f, lookRotation.eulerAngles.y, 0f);
 
+        // calculates the difference with camera look (way the player is rotated) and way the bill
+        // is facing itself, and use that to determine what sprite to use
         float theta = target.rotation.eulerAngles.y - lookAngle;
         Debug.Log(theta);
         ChangeSprite(theta);
-
-        //billboardImage.transform.rotation = Quaternion.Euler(0f, lookAngle, 0f);
-
-        // doesnt behave properly
-        //
-        // TODO:
-        // should behave as if looking in one direction (which is internal?)
-        // but appear always facing the player (which is external, i presume)
-        // and change sprite based on angle of player to internal direction (so it looks 3d)
     }
 
     private void ChangeSprite(float a)
