@@ -14,6 +14,7 @@ public class BillboardingEnemyBehavior : BaseEnemyBehaviour
     internal override void OnEnemyUpdate()
     {
         LookAt(this.target.position);
+        transform.Translate(Forward() * Time.deltaTime * 0.5f);
     }
 
     internal override void SetResourceDictionary()
@@ -35,9 +36,17 @@ public class BillboardingEnemyBehavior : BaseEnemyBehaviour
 
         // calculates the difference with camera look (way the player is rotated) and way the bill
         // is facing itself, and use that to determine what sprite to use
-        float theta = target.rotation.eulerAngles.y - lookAngle;
+        // properly works with non 0 lookAngles too (which is necessary for the internal rotation thing to work)
+        float theta = lookAngle - target.rotation.eulerAngles.y;
+        if (theta < 0) theta += 360;
         Debug.Log(theta);
         ChangeSprite(theta);
+    }
+
+    internal virtual Vector3 Forward()
+    {
+        float lookRadians = lookAngle * Mathf.PI / 180.0f;
+        return new Vector3(-Mathf.Sin(lookRadians), 0, -Mathf.Cos(lookRadians));
     }
 
     private void ChangeSprite(float a)
