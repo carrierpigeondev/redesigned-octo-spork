@@ -7,15 +7,23 @@ using UnityEngine.UI;
 public class ResourceUIParentBehaviour : MonoBehaviour
 {
     public TMP_Text[] ResourceTexts;
-    [SerializeField] private RawImage background;
+
+    public bool IsOpen = false;
+
+    private RectTransform r;
 
     private void Start()
     {
-        Texture2D tex = background.texture as Texture2D;
-        tex.Apply();
+        r = GetComponent<RectTransform>();
+    }
 
-        Color newC = new Color(0f, 0f, 0f, 0f);
-        tex.SetPixel(10, 10, newC);
-        tex.Apply();
+    public void MoveOut()
+    {
+        r.anchoredPosition = new Vector3(700f, 0f, 0f);
+    }
+
+    public void MoveIn()
+    {
+        r.anchoredPosition = new Vector3(0f, 0f, 0f);
     }
 }
