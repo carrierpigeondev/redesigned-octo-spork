@@ -3,6 +3,8 @@ using UnityEngine.UI;
 
 public class BillboardingEnemyBehavior : BaseEnemyBehaviour
 {
+    public float MoveSpeed = 2;
+
     [SerializeField] private RawImage billboardImage;
 
     [SerializeField] private TextureManagerAsset textureManager;
@@ -13,8 +15,13 @@ public class BillboardingEnemyBehavior : BaseEnemyBehaviour
 
     internal override void OnEnemyUpdate()
     {
-        LookAt(this.target.position);
-        transform.Translate(Forward() * Time.deltaTime * 0.5f);
+        LookAt(this.target.position); // must always happen for rendering to work properly
+
+        if (Vector3.Distance(billboardImage.transform.position, target.position) > GeneralRange)
+            return;
+
+        ChangeLookAngleToward(target.position);
+        transform.Translate(Time.deltaTime * MoveSpeed * Forward());
     }
 
     internal override void SetResourceDictionary()
@@ -39,8 +46,15 @@ public class BillboardingEnemyBehavior : BaseEnemyBehaviour
         // properly works with non 0 lookAngles too (which is necessary for the internal rotation thing to work)
         float theta = lookAngle - target.rotation.eulerAngles.y;
         if (theta < 0) theta += 360;
-        Debug.Log(theta);
+        //Debug.Log(theta);
         ChangeSprite(theta);
+    }
+
+    internal virtual void ChangeLookAngleToward(Vector3 targetVector)
+    {
+        Vector3 direction = targetVector - billboardImage.transform.position;
+        float angle = Mathf.Atan2(-direction.x, -direction.z) * Mathf.Rad2Deg;
+        lookAngle = angle;
     }
 
     internal virtual Vector3 Forward()
