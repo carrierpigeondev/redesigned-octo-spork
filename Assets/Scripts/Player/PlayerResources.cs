@@ -20,9 +20,9 @@ public class PlayerResources : MonoBehaviour
     private void Update()
     {
         // because Dictionary isn't serializable, debug info goes here :D
-        if (DebugToggle.DebugToggleEnabled)
-            foreach (KeyValuePair<Resource, int> kvp in resourceDictionary)
-                Debug.Log($"{kvp.Key} :: {kvp.Value}");
+        //if (DebugToggle.DebugToggleEnabled)
+            //foreach (KeyValuePair<Resource, int> kvp in resourceDictionary)
+            //    Debug.Log($"{kvp.Key} :: {kvp.Value}");
     }
 
     public int GetResource(Resource resource)

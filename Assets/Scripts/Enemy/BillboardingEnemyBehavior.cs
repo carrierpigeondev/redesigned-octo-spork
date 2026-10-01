@@ -5,23 +5,50 @@ public class BillboardingEnemyBehavior : BaseEnemyBehaviour
 {
     public float MoveSpeed = 2;
 
-    [SerializeField] private RawImage billboardImage;
+    [SerializeField] internal RawImage billboardImage;
 
-    [SerializeField] private TextureManagerAsset textureManager;
+    [SerializeField] internal TextureManagerAsset textureManager;
 
-    [SerializeField] private string namePrefix;
-    [SerializeField] private float lookAngle; // internal way that it faces
+    [SerializeField] internal string namePrefix;
+    [SerializeField] internal float lookAngle; // internal way that it faces
     private byte textureIndex;
 
     internal override void OnEnemyUpdate()
     {
+        DoEnemyUpdate();
+
+        // the GeneralRange check in question:
+        if (Vector3.Distance(billboardImage.transform.position, target.position) < GeneralRange)
+        {
+            DoEnemyUpdateInRange();
+        } else
+        {
+            DoEnemyUpdateOutOfRange();
+        }
+    }
+
+    /// <summary>
+    /// Method called OnEnemyUpdate prior to GeneralRange check
+    /// </summary>
+    internal virtual void DoEnemyUpdate()
+    {
         LookAt(this.target.position); // must always happen for rendering to work properly
+    }
 
-        if (Vector3.Distance(billboardImage.transform.position, target.position) > GeneralRange)
-            return;
-
+    /// <summary>
+    /// Method called OnEnemyUpdate if GeneralRange check passes
+    /// </summary>
+    internal virtual void DoEnemyUpdateInRange()
+    {
         ChangeLookAngleToward(target.position);
-        transform.Translate(Time.deltaTime * MoveSpeed * Forward());
+    }
+
+    /// <summary>
+    /// Method called OnEnemyUpdate if GeneralRange check fails
+    /// </summary>
+    internal virtual void DoEnemyUpdateOutOfRange()
+    {
+        
     }
 
     internal override void SetResourceDictionary()
