@@ -62,15 +62,4 @@ public class FloaterEnemyBehavior : BillboardingEnemyBehavior
         a.y = newHeightTarget;
         billboardImage.transform.position = a;
     }
-
-    private float GetDistanceToGround()
-    {
-        float limit = 1000; // reasonable enough
-        RaycastHit hit;
-        if (Physics.Raycast(transform.position, Vector3.down, out hit, limit))
-        {
-            return hit.distance;
-        }
-        return Mathf.Infinity; // didn't hit so goes on forever, I assume
-    }
 }
