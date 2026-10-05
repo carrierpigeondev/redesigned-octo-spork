@@ -13,6 +13,8 @@ public class BillboardingEnemyBehavior : BaseEnemyBehaviour
     [SerializeField] internal float lookAngle; // internal way that it faces
     private byte textureIndex;
 
+    private int previousDirection = -1;
+
     internal override void OnEnemyUpdate()
     {
         DoEnemyUpdate();
@@ -46,10 +48,7 @@ public class BillboardingEnemyBehavior : BaseEnemyBehaviour
     /// <summary>
     /// Method called OnEnemyUpdate if GeneralRange check fails
     /// </summary>
-    internal virtual void DoEnemyUpdateOutOfRange()
-    {
-        
-    }
+    internal virtual void DoEnemyUpdateOutOfRange() { }
 
     internal override void SetResourceDictionary()
     {
@@ -65,15 +64,14 @@ public class BillboardingEnemyBehavior : BaseEnemyBehaviour
     {
         // handle simple rotation, this doesn't need to know anything about the internal look angle
         Vector3 dir = target.position - billboardImage.transform.position;
-        Quaternion lookRotation = Quaternion.LookRotation(dir);
-        billboardImage.transform.rotation = Quaternion.Euler(0f, lookRotation.eulerAngles.y, 0f);
+        billboardImage.transform.rotation = Quaternion.LookRotation(dir);
 
         // calculates the difference with camera look (way the player is rotated) and way the bill
         // is facing itself, and use that to determine what sprite to use
         // properly works with non 0 lookAngles too (which is necessary for the internal rotation thing to work)
         float theta = lookAngle - target.rotation.eulerAngles.y;
         if (theta < 0) theta += 360;
-        //Debug.Log(theta);
+
         ChangeSprite(theta);
     }
 
@@ -90,36 +88,15 @@ public class BillboardingEnemyBehavior : BaseEnemyBehaviour
         return new Vector3(-Mathf.Sin(lookRadians), 0, -Mathf.Cos(lookRadians));
     }
 
-    private void ChangeSprite(float a)
+    private void ChangeSprite(float angle)
     {
-        string count = "0";
-        switch (a)
-        {
-            case float t when t <= 22.5 || t >= 337.5:
-                count = "0"; break;
-
-            case float t when t <= 67.5:
-                count = "1"; break;
-
-            case float t when t <= 112.5:
-                count = "2"; break;
-
-            case float t when t <= 157.5:
-                count = "3"; break;
-
-            case float t when t <= 202.5:
-                count = "4"; break;
-
-            case float t when t <= 247.5:
-                count = "5"; break;
-
-            case float t when t <= 292.5:
-                count = "6"; break;
-
-            case float t when t <= 337.5:
-                count = "7"; break;
-        }
-        textureIndex = textureManager[$"{namePrefix}_{count}"];
+        angle = Mathf.Repeat(angle, 360f);
+        
+        int direction = Mathf.FloorToInt((angle + 22.5f) / 45f) % 8;
+        if (direction == previousDirection) return; // save on getting texture when not needed
+        previousDirection = direction;
+        
+        textureIndex = textureManager[$"{namePrefix}_{direction}"];
         billboardImage.texture = textureManager.GetTexture(textureIndex);
     }
 }

@@ -33,19 +33,19 @@ public class TurretEnemyBehavior : BillboardingEnemyBehavior
 
     internal override void SpecificStart()
     {
-        beginLocation = billboardImage.transform.position;
+        beginLocation = transform.position;
 
         // Checks the bounds to which it can move relative to itself currently
         Debug.Log(distanceAbove);
         RaycastHit hitAbove;
-        if (Physics.Raycast(billboardImage.transform.position, Vector3.up, out hitAbove, CAST_LIMIT))
+        if (Physics.Raycast(transform.position, Vector3.up, out hitAbove, CAST_LIMIT))
         {
             distanceAbove = hitAbove.distance;
         } // if no hit, stays at 1000, the limit
         Debug.Log(distanceAbove);
 
         RaycastHit hitBelow;
-        if (Physics.Raycast(billboardImage.transform.position, Vector3.down, out hitBelow, CAST_LIMIT))
+        if (Physics.Raycast(transform.position, Vector3.down, out hitBelow, CAST_LIMIT))
         {
             distanceBelow = hitBelow.distance;
         } // if no hit, stays at 1000, the limit
@@ -67,7 +67,7 @@ public class TurretEnemyBehavior : BillboardingEnemyBehavior
         Vector3 newPos = Vector3.Lerp(beginLocation, endLocation, progress);
         newPos.y += stepHeight * stepHeightShape.Evaluate(progress);
 
-        billboardImage.transform.position = newPos;
+        transform.position = newPos;
 
         if (progress == 1)
         {
