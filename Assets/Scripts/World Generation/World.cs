@@ -21,6 +21,9 @@ public class World : MonoBehaviour
         Material blockMaterial = textureManager.BlockMaterial;
         await GenerateWorldAsync(blockMaterial);
 
+        // Spawn enemies
+        SpawnEnemies();
+
         playerControllerReference.AddUpdateActions(); // allow player gravity and movement after world gen
     }
 
@@ -66,5 +69,10 @@ public class World : MonoBehaviour
         chunks.Add(chunkPosition, chunkBehavior);
 
         return chunkBehavior;
+    }
+
+    private void SpawnEnemies()
+    {
+
     }
 }

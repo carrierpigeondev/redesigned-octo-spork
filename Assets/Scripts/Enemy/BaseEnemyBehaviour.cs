@@ -15,7 +15,10 @@ public abstract class BaseEnemyBehaviour : MonoBehaviour
         CurrentHealth = MaxHealth;
         SetResourceDictionary();
         SetInternalPlayerValues();
+        SpecificStart();
     }
+
+    internal virtual void SpecificStart() { }
 
     private void Update()
     {
