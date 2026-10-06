@@ -3,6 +3,7 @@ using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using TMPro;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(CharacterController))]
 [RequireComponent(typeof(PlayerWeapons))]
@@ -19,6 +20,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float jumpVelocity = 7.0f;
     [SerializeField] private Camera camera;
     [SerializeField] private ResourceUIParentBehaviour ruipb;
+    [SerializeField] private ShopBehavior shop;
 
     private float pitch = 0.0f;
     private float verticalVelocity = 0.0f;
@@ -124,7 +126,21 @@ public class PlayerController : MonoBehaviour
 
     private void OnOpenResourceUI(InputAction.CallbackContext context)
     {
-        if (ruipb.IsOpen) { ruipb.MoveOut(); ruipb.IsOpen = false; }
-        else { ruipb.MoveIn(); ruipb.IsOpen = true; }
+        if (ruipb.IsOpen)
+        {
+            ruipb.MoveOut();
+            ruipb.IsOpen = false;
+        }
+        else
+        {
+            ruipb.MoveIn();
+            ruipb.IsOpen = true;
+        }
+
+        if (shop.CanBeInteractedWith)
+        {
+            if (!ruipb.IsOpen) ruipb.MoveIn();
+            shop.ToggleMenu();
+        }
     }
 }
