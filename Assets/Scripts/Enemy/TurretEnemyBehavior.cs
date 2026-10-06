@@ -1,29 +1,30 @@
+using System;
 using Unity.VisualScripting;
 using UnityEngine;
 
 public class TurretEnemyBehavior : BillboardingEnemyBehavior
 {
-    [SerializeField] private const float CAST_LIMIT = 20f;
-    [SerializeField] private float distanceAbove = CAST_LIMIT;
-    [SerializeField] private float distanceBelow = CAST_LIMIT;
-    [SerializeField] private Vector3 beginLocation, endLocation;
-
-    [SerializeField] AnimationCurve stepEase = new AnimationCurve(new Keyframe(0f, 0f), new Keyframe(1f, 1f));
-    [SerializeField] AnimationCurve stepHeightShape = new AnimationCurve(new Keyframe(0f, 0f), new Keyframe(0.5f, 1f), new Keyframe(1f, 0f));
-    [SerializeField] float stepHeight = 0.3f;
-    [SerializeField] float stepDuration = 0.3f;
-
-    private float stepTime;
-
+    [SerializeField] private float fireCooldown;
+    [SerializeField] private float fireTimer;
+    [SerializeField] private float fireRange;
+    [SerializeField] private float rotSpeed;
+    
     internal override void OnEnemyUpdate()
     {
-        base.OnEnemyUpdate();
+        base.OnEnemyUpdate(); // only handles billboarding
     }
 
     internal override void DoEnemyUpdateInRange()
     {
-        base.DoEnemyUpdateInRange();
-        AdjustHeight();
+        AimAtPlayer();
+        fireTimer -= Time.deltaTime;
+        
+        float distanceToPlayer = Vector3.Distance(target.position, transform.position);
+        if (distanceToPlayer <= fireRange && fireTimer <= 0 && CanSeePlayer())
+        {
+            Fire();
+            fireTimer = fireCooldown;
+        }
     }
 
     internal override void SetResourceDictionary()
@@ -33,48 +34,34 @@ public class TurretEnemyBehavior : BillboardingEnemyBehavior
 
     internal override void SpecificStart()
     {
-        beginLocation = transform.position;
-
-        // Checks the bounds to which it can move relative to itself currently
-        Debug.Log(distanceAbove);
-        RaycastHit hitAbove;
-        if (Physics.Raycast(transform.position, Vector3.up, out hitAbove, CAST_LIMIT))
-        {
-            distanceAbove = hitAbove.distance;
-        } // if no hit, stays at 1000, the limit
-        Debug.Log(distanceAbove);
-
-        RaycastHit hitBelow;
-        if (Physics.Raycast(transform.position, Vector3.down, out hitBelow, CAST_LIMIT))
-        {
-            distanceBelow = hitBelow.distance;
-        } // if no hit, stays at 1000, the limit
-
-
-        // TEST
-        //distanceAbove = 10;
-
-        endLocation = beginLocation;
-        endLocation.y += distanceAbove / 2;
+        
     }
 
-    private void AdjustHeight()
+    private void AimAtPlayer()
     {
-        stepTime += Time.deltaTime;
-        float progress = stepEase.Evaluate(stepTime / stepDuration);
-        ///Debug.Log(progress);
+        Vector3 direction = target.position - transform.position;
 
-        Vector3 newPos = Vector3.Lerp(beginLocation, endLocation, progress);
-        newPos.y += stepHeight * stepHeightShape.Evaluate(progress);
+        float angle = Mathf.Atan2(-direction.x, -direction.z) * Mathf.Rad2Deg;
+        lookAngle = Mathf.MoveTowardsAngle(lookAngle, angle, rotSpeed * Time.deltaTime);
+    }
 
-        transform.position = newPos;
+    private bool CanSeePlayer()
+    {
+        Vector3 direction = target.position - transform.position;
+        float distanceToPlayer = direction.magnitude;
 
-        if (progress == 1)
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position, direction, out hit, distanceToPlayer))
         {
-            Vector3 t = endLocation;
-            endLocation = beginLocation;
-            beginLocation = t;
-            stepTime = 0;
+            return hit.transform == target;
         }
+
+        return false;
+    }
+
+    private void Fire()
+    {
+        
+        
     }
 }
