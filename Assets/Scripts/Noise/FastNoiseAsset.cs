@@ -35,6 +35,11 @@ public class FastNoiseAsset : ScriptableObject
     
     private FastNoiseLite fastNoiseInstance;
 
+    public int ExposeSeed()
+    {
+        return seed;
+    }
+
     private void OnEnable()
     {
         fastNoiseInstance = new FastNoiseLite();

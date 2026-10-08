@@ -33,9 +33,6 @@ public class PlayerController : MonoBehaviour
         
         controller = GetComponent<CharacterController>();
         weapons = GetComponent<PlayerWeapons>();
-        
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
     }
 
     private void OnEnable()
@@ -63,6 +60,17 @@ public class PlayerController : MonoBehaviour
         for (int i = 0; i < updateActions.Count; i++)
         {
             updateActions[i]();
+        }
+        
+        if (shop.ParentObjectMenu.activeSelf)
+        {
+            Cursor.lockState = CursorLockMode.Confined;
+            Cursor.visible = true;
+        }
+        else
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
         }
     }
 
@@ -126,20 +134,23 @@ public class PlayerController : MonoBehaviour
 
     private void OnOpenResourceUI(InputAction.CallbackContext context)
     {
-        if (ruipb.IsOpen)
-        {
-            ruipb.MoveOut();
-            ruipb.IsOpen = false;
-        }
-        else
-        {
-            ruipb.MoveIn();
-            ruipb.IsOpen = true;
-        }
+        // if (ruipb.IsOpen)
+        // {
+        //     ruipb.MoveOut();
+        //     ruipb.IsOpen = false;
+        // }
+        // else
+        // {
+        //     ruipb.MoveIn();
+        //     ruipb.IsOpen = true;
+        // }
 
+        Cursor.lockState = CursorLockMode.Confined;
+        Cursor.visible = true;
+        
         if (shop.CanBeInteractedWith)
         {
-            if (!ruipb.IsOpen) ruipb.MoveIn();
+            // if (!ruipb.IsOpen) ruipb.MoveIn();
             shop.ToggleMenu();
         }
     }

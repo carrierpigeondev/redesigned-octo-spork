@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,6 +14,8 @@ public enum Weapon
 
 public static class WeaponExtensions
 {
+    public static float Offset;
+    
     public static Texture2D GetWeaponToolbarTexture(this Weapon weapon)
     {
         return UnityResourceLoader.WeaponToolbarTextures[(int)weapon];
@@ -24,7 +27,7 @@ public static class WeaponExtensions
         
         Debug.Log($"fired a weapon named {Enum.GetName(typeof(Weapon), weapon)}");
 
-        WeaponFireInformation info = new WeaponFireInformation(10, 2048);
+        WeaponFireInformation info = weapon.CreateFireInformation();
         if (Physics.Raycast(origin, direction, out RaycastHit hit, info.Distance))
         {
             Debug.Log("hit " + hit.transform.name);
@@ -40,6 +43,48 @@ public static class WeaponExtensions
     {
         enemyBehaviour.TakeDamage(info.Damage);
     }
+
+    private static WeaponFireInformation CreateFireInformation(this Weapon weapon)
+    {
+        switch (weapon)
+        {
+            case Weapon.Pistol:         return new WeaponFireInformation(10, 2048);
+            case Weapon.Rifle:          return new WeaponFireInformation(20, 2048);
+            case Weapon.AdvancedPistol: return new WeaponFireInformation(15, 2048);
+            case Weapon.AdvancedRifle:  return new WeaponFireInformation(30, 2048);
+            default:
+                throw new NotImplementedException();
+        }
+    }
+
+    public static WeaponPurchaseInformation CreatePurchaseInformation(this Weapon weapon)
+    {
+        if (weapon == Weapon.Pistol)
+        {
+            Dictionary<Resource, int> _resourceDictionary = new Dictionary<Resource, int>();
+            _resourceDictionary.Add(Resource.Ruby, 0);
+            _resourceDictionary.Add(Resource.Flesh, 0);
+            return new WeaponPurchaseInformation(_resourceDictionary, false);
+        }
+        
+        int baseResources = 30;
+        float variation = (Mathf.Sin(Offset) + 1f) / 2f;
+        int rubyAmount = Mathf.RoundToInt(baseResources * (int)weapon * (0.5f + variation));
+        int fleshAmount = Mathf.RoundToInt(baseResources * (int)weapon * (1.5f - variation));
+        
+        Dictionary<Resource, int> resourceDictionary = new Dictionary<Resource, int>();
+        resourceDictionary.Add(Resource.Ruby, rubyAmount);
+        resourceDictionary.Add(Resource.Flesh, fleshAmount);
+
+        if (weapon == Weapon.AdvancedPistol || weapon == Weapon.AdvancedRifle)
+        {
+            return new WeaponPurchaseInformation(resourceDictionary, true);
+        }
+        else
+        {
+            return new WeaponPurchaseInformation(resourceDictionary, false);
+        }
+    }
 }
 
 struct WeaponFireInformation
@@ -52,4 +97,17 @@ struct WeaponFireInformation
         Damage = damage;
         Distance = distance;
     }
+}
+
+public struct WeaponPurchaseInformation
+{
+    public Dictionary<Resource, int> ResourceDictionary;
+    public bool IsAdvanced;
+
+    public WeaponPurchaseInformation(Dictionary<Resource, int> resourceDictionary, bool isAdvanced)
+    {
+        ResourceDictionary = resourceDictionary;
+        IsAdvanced = isAdvanced;
+    }
+    
 }

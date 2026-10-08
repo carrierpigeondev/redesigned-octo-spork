@@ -1,6 +1,7 @@
 using System;
 using Unity.VisualScripting;
 using UnityEngine;
+using Random = System.Random;
 
 public class TurretEnemyBehavior : BillboardingEnemyBehavior
 {
@@ -29,7 +30,8 @@ public class TurretEnemyBehavior : BillboardingEnemyBehavior
 
     internal override void SetResourceDictionary()
     {
-        resourceDictionary.Add(Resource.Ruby, 7);
+        resourceDictionary.Add(Resource.Ruby, new Random().Next(5, 15));
+        resourceDictionary.Add(Resource.Flesh, new Random().Next(9, 17));
     }
 
     internal override void SpecificStart()
