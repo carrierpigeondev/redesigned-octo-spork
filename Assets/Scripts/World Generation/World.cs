@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 using Vector3 = UnityEngine.Vector3;
+using Random = System.Random;
 
 public class World : MonoBehaviour
 {
@@ -13,6 +14,7 @@ public class World : MonoBehaviour
     [SerializeField] private FastNoiseAsset noiseAsset;
     [SerializeField] private FastNoiseAsset strataNoiseAsset;
     [SerializeField] private PlayerController playerControllerReference;
+    [SerializeField] private GameObject shopZoneObject;
 
     private Dictionary<Vector3Int, ChunkBehavior> chunks = new Dictionary<Vector3Int, ChunkBehavior>();
 
@@ -21,8 +23,16 @@ public class World : MonoBehaviour
         Material blockMaterial = textureManager.BlockMaterial;
         await GenerateWorldAsync(blockMaterial);
 
+        // Move the player
+        MovePlayerToLocation();
+
+        // Spawn the shop
+        SpawnShop();
+
         // Spawn enemies
         SpawnEnemies();
+
+        
 
         playerControllerReference.AddUpdateActions(); // allow player gravity and movement after world gen
     }
@@ -71,8 +81,46 @@ public class World : MonoBehaviour
         return chunkBehavior;
     }
 
+    private void SpawnShop()
+    {
+        // determine a location
+        shopZoneObject.transform.position = GetLocationAboveGround(0);
+        shopZoneObject.GetComponentInChildren<MeshRenderer>().enabled = true;
+    }
+
+    private Vector3 GetLocationAboveGround(int i)
+    {
+        if (i > 5)
+        {
+            Debug.LogError("too many attempts");
+            return Vector3.zero;
+        }
+
+        var rX = new Random().Next(-25, 41);
+        var rZ = new Random().Next(-25, 41);
+
+        var point = new Vector3(rX, 96.01f, rZ);
+
+        RaycastHit hit;
+        if (Physics.Raycast(point, Vector3.down, out hit, 0.25f))
+        {
+            return point;
+        } else
+        {
+            return GetLocationAboveGround(i++);
+        }
+
+    }
+
     private void SpawnEnemies()
     {
 
+    }
+
+    private void MovePlayerToLocation()
+    {
+        var temp = GetLocationAboveGround(0);
+        temp.y = 120;
+        playerControllerReference.transform.position = temp;
     }
 }
