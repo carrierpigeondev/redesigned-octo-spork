@@ -88,5 +88,11 @@ public class ShopBehavior : MonoBehaviour
         }
         
         playerWeapons.UpdateToolbar();
+        
+        // bought first weapon, advance the story
+        if (StoryManager.CurrentState == StoryState._01_GoToShopZone)
+        {
+            StoryManager.CurrentState = StoryState._02_AlienLife;
+        }
     }
 }

@@ -40,6 +40,7 @@ public class PlayerController : MonoBehaviour
         inputs.Enable();
         inputs.Player.Look.performed += OnLook;
         inputs.Player.Jump.performed += OnJump;
+        inputs.Player.Jump.performed += AdvanceToStory01;
         inputs.UI.ScrollWheel.performed += OnScrollWheelPerformed;
         inputs.Player.Attack.performed += OnFire;
         inputs.Player.Crouch.performed += OnOpenResourceUI;
@@ -50,6 +51,7 @@ public class PlayerController : MonoBehaviour
         inputs.Player.Crouch.performed -= OnOpenResourceUI;
         inputs.Player.Attack.performed -= OnFire;
         inputs.UI.ScrollWheel.performed -= OnScrollWheelPerformed;
+        inputs.Player.Jump.performed -= AdvanceToStory01;
         inputs.Player.Jump.performed -= OnJump;
         inputs.Player.Look.performed -= OnLook;
         inputs.Disable();
@@ -84,6 +86,14 @@ public class PlayerController : MonoBehaviour
     {
         updateActions.Remove(HandleMovement);
         updateActions.Remove(CalculateGravity);
+    }
+
+    private void AdvanceToStory01(InputAction.CallbackContext context)
+    {
+        if (StoryManager.CurrentState == StoryState._00_Beginning)
+        {
+            StoryManager.CurrentState = StoryState._01_GoToShopZone;
+        }
     }
 
     private void HandleMovement()

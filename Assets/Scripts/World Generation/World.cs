@@ -32,8 +32,7 @@ public class World : MonoBehaviour
         // Spawn enemies
         SpawnEnemies();
 
-        
-
+        while (StoryManager.CurrentState == StoryState._00_Beginning) {}  // delay until not beginning
         playerControllerReference.AddUpdateActions(); // allow player gravity and movement after world gen
     }
 
