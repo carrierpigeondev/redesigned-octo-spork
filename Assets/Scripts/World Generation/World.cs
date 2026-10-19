@@ -9,7 +9,7 @@ public class World : MonoBehaviour
 {
     [SerializeField] private int worldSize = 16;
     [SerializeField] private int maxConcurrentChunkGenerations = 4;
-    
+
     [SerializeField] private TextureManagerAsset textureManager;
     [SerializeField] private FastNoiseAsset noiseAsset;
     [SerializeField] private FastNoiseAsset strataNoiseAsset;
@@ -32,14 +32,18 @@ public class World : MonoBehaviour
         // Spawn enemies
         SpawnEnemies();
 
-        while (StoryManager.CurrentState == StoryState._00_Beginning) {}  // delay until not beginning
+        while (StoryManager.CurrentState == StoryState._00_Beginning)
+        {
+            await Task.Yield();
+        } // delay until not beginning
+
         playerControllerReference.AddUpdateActions(); // allow player gravity and movement after world gen
     }
 
     private async Task GenerateWorldAsync(Material blockMaterial)
     {
         List<Task> activeWorldGenerationTasks = new List<Task>(maxConcurrentChunkGenerations);
-        
+
         for (int x = -worldSize; x <= worldSize; x++)
         for (int z = -worldSize; z <= worldSize; z++)
         {
@@ -50,26 +54,26 @@ public class World : MonoBehaviour
             activeWorldGenerationTasks.Add(chunkBehavior.GenerateAsync(blockMaterial));
 
             if (activeWorldGenerationTasks.Count < maxConcurrentChunkGenerations) continue;
-            
+
             Task completed = await Task.WhenAny(activeWorldGenerationTasks);
             activeWorldGenerationTasks.Remove(completed);
             await completed;
         }
-        
+
         await Task.WhenAll(activeWorldGenerationTasks);
     }
 
     private ChunkBehavior CreateChunk(Vector3Int chunkPosition)
     {
         GameObject chunkObject = new GameObject($"Chunk_{chunkPosition.x}_{chunkPosition.y}_{chunkPosition.z}");
-        
+
         chunkObject.transform.SetParent(transform);
         chunkObject.transform.position = new Vector3(
             chunkPosition.x * ChunkBehavior.Resolution * ChunkBehavior.BlockSize,
             0,
             chunkPosition.z * ChunkBehavior.Resolution * ChunkBehavior.BlockSize
         );
-        
+
         ChunkBehavior chunkBehavior = chunkObject.AddComponent<ChunkBehavior>();
 
         chunkBehavior.TextureManager = textureManager;
@@ -89,7 +93,7 @@ public class World : MonoBehaviour
 
     private Vector3 GetLocationAboveGround(int i)
     {
-        if (i > 5)
+        if (i > 50)
         {
             Debug.LogError("too many attempts");
             return Vector3.zero;
@@ -104,9 +108,10 @@ public class World : MonoBehaviour
         if (Physics.Raycast(point, Vector3.down, out hit, 0.25f))
         {
             return point;
-        } else
+        }
+        else
         {
-            return GetLocationAboveGround(i++);
+            return GetLocationAboveGround(i + 1);
         }
 
     }
@@ -116,10 +121,16 @@ public class World : MonoBehaviour
 
     }
 
-    private void MovePlayerToLocation()
+    public void MovePlayerToLocation()
     {
-        var temp = GetLocationAboveGround(0);
-        temp.y = 120;
-        playerControllerReference.transform.position = temp;
+        Vector3 position = GetLocationAboveGround(0);
+        position.y = 120;
+
+        CharacterController controller =
+            playerControllerReference.GetComponent<CharacterController>();
+
+        controller.enabled = false;
+        playerControllerReference.transform.position = position;
+        controller.enabled = true;
     }
 }

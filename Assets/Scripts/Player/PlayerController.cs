@@ -21,6 +21,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Camera camera;
     [SerializeField] private ResourceUIParentBehaviour ruipb;
     [SerializeField] private ShopBehavior shop;
+    [SerializeField] private World w;
 
     private float pitch = 0.0f;
     private float verticalVelocity = 0.0f;
@@ -44,10 +45,12 @@ public class PlayerController : MonoBehaviour
         inputs.UI.ScrollWheel.performed += OnScrollWheelPerformed;
         inputs.Player.Attack.performed += OnFire;
         inputs.Player.Crouch.performed += OnOpenResourceUI;
+        inputs.Player.Interact.performed += OnTeleport;
     }
 
     private void OnDisable()
     {
+        inputs.Player.Interact.performed -= OnTeleport;
         inputs.Player.Crouch.performed -= OnOpenResourceUI;
         inputs.Player.Attack.performed -= OnFire;
         inputs.UI.ScrollWheel.performed -= OnScrollWheelPerformed;
@@ -73,6 +76,13 @@ public class PlayerController : MonoBehaviour
         {
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
+        }
+
+        if (transform.position.y < -1000)
+        {
+            controller.enabled = false;
+            transform.position = new Vector3(transform.position.x, 500, transform.position.z);
+            controller.enabled = true;
         }
     }
 
@@ -163,5 +173,11 @@ public class PlayerController : MonoBehaviour
             // if (!ruipb.IsOpen) ruipb.MoveIn();
             shop.ToggleMenu();
         }
+    }
+
+    private void OnTeleport(InputAction.CallbackContext context)
+    {
+        Debug.Log("Teleported");
+        w.MovePlayerToLocation();
     }
 }
