@@ -14,6 +14,8 @@ public class ShopBehavior : MonoBehaviour
     public float DistanceToPlayer;
     public bool CanBeInteractedWith;
 
+    [SerializeField] private World w;
+
     // called externally
     public void ToggleMenu()
     {
@@ -89,10 +91,25 @@ public class ShopBehavior : MonoBehaviour
         
         playerWeapons.UpdateToolbar();
         
+        // bought next weapon(s), advance the story
+        if (StoryManager.CurrentState == StoryState._02_AlienLife)
+        {
+            StoryManager.CurrentState = StoryState._03_ContinueResources;
+            w.SpawnEnemies(30, 50);
+        }
+        
         // bought first weapon, advance the story
         if (StoryManager.CurrentState == StoryState._01_GoToShopZone)
         {
             StoryManager.CurrentState = StoryState._02_AlienLife;
+            
+            // on advance to alienlife, spawn first enemies
+            w.SpawnEnemies(30, 50);
+        }
+
+        if (playerWeapons.OwnedWeapons.Count > 4)
+        {
+            StoryManager.CurrentState = StoryState._04_Sleep;
         }
     }
 }

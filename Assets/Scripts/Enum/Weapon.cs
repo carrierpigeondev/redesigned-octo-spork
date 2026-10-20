@@ -26,6 +26,7 @@ public static class WeaponExtensions
         if (weapon == Weapon.None) return;
         
         Debug.Log($"fired a weapon named {Enum.GetName(typeof(Weapon), weapon)}");
+        ExposedAsset.gunSource.PlayOneShot(ExposedAsset.gunSource.clip);
 
         WeaponFireInformation info = weapon.CreateFireInformation();
         if (Physics.Raycast(origin, direction, out RaycastHit hit, info.Distance))

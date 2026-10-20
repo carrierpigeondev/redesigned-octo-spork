@@ -58,6 +58,7 @@ public abstract class BaseEnemyBehaviour : MonoBehaviour
 
     internal virtual void TakeDamage(int damage)
     {
+        ExposedAsset.hitSource.PlayOneShot(ExposedAsset.hitSource.clip);
         CurrentHealth -= damage;
         if (CurrentHealth <= 0)
         {

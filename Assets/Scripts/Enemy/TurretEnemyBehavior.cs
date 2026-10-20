@@ -9,10 +9,21 @@ public class TurretEnemyBehavior : BillboardingEnemyBehavior
     [SerializeField] private float fireTimer;
     [SerializeField] private float fireRange;
     [SerializeField] private float rotSpeed;
+
+    private bool disabledCollider = false;
     
     internal override void OnEnemyUpdate()
     {
         base.OnEnemyUpdate(); // only handles billboarding
+        if (StoryManager.HasChangedToDoom)
+        {
+            if (!disabledCollider)
+            {
+                GetComponentInChildren<Collider>().enabled = false;
+                disabledCollider = true;
+            }
+            Float();
+        }
     }
 
     internal override void DoEnemyUpdateInRange()
@@ -65,5 +76,10 @@ public class TurretEnemyBehavior : BillboardingEnemyBehavior
     {
         
         
+    }
+
+    private void Float()
+    {
+        transform.Translate(Time.deltaTime * 3f * Vector3.up);
     }
 }

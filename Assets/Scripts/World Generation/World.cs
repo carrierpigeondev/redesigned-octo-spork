@@ -15,6 +15,7 @@ public class World : MonoBehaviour
     [SerializeField] private FastNoiseAsset strataNoiseAsset;
     [SerializeField] private PlayerController playerControllerReference;
     [SerializeField] private GameObject shopZoneObject;
+    [SerializeField] private GameObject enemyPrefab;
 
     private Dictionary<Vector3Int, ChunkBehavior> chunks = new Dictionary<Vector3Int, ChunkBehavior>();
 
@@ -28,9 +29,6 @@ public class World : MonoBehaviour
 
         // Spawn the shop
         SpawnShop();
-
-        // Spawn enemies
-        SpawnEnemies();
 
         while (StoryManager.CurrentState == StoryState._00_Beginning)
         {
@@ -93,32 +91,49 @@ public class World : MonoBehaviour
 
     private Vector3 GetLocationAboveGround(int i)
     {
+        return GetLocationAboveGroundBelowCeilingAtLevel(i, 96.01f, 0.25f, 1000f);
+    }
+
+    private Vector3 GetLocationAboveGroundBelowCeilingAtLevel(int i, float level, float groundRange, float ceilingRange)
+    {
         if (i > 50)
         {
             Debug.LogError("too many attempts");
             return Vector3.zero;
         }
-
+        
+        // hardcoded bounds
         var rX = new Random().Next(-25, 41);
         var rZ = new Random().Next(-25, 41);
+        
+        var point = new Vector3(rX, level, rZ);
 
-        var point = new Vector3(rX, 96.01f, rZ);
-
-        RaycastHit hit;
-        if (Physics.Raycast(point, Vector3.down, out hit, 0.25f))
+        if (!Physics.Raycast(point, Vector3.down, groundRange))
         {
-            return point;
-        }
-        else
-        {
-            return GetLocationAboveGround(i + 1);
+            // try again because did not hit ground in less than ground range
+            return GetLocationAboveGroundBelowCeilingAtLevel(i + 1, level, groundRange, ceilingRange);
         }
 
+        if (Physics.Raycast(point, Vector3.up, ceilingRange))
+        {
+            // try again because it did hit the ceiling in less than ceiling range
+            return GetLocationAboveGroundBelowCeilingAtLevel(i + 1, level, groundRange, ceilingRange);
+        }
+
+        return point; // point found is valid
     }
 
-    private void SpawnEnemies()
+    public void SpawnEnemies(int minCount, int maxCount)
     {
+        var count = new Random().Next(minCount, maxCount);
+        Debug.Log($"Spawning {count} enemies");
 
+        for (int i = 0; i < count; i++)
+        {
+            var rY = new Random().Next(0, 60);
+            Vector3 position = GetLocationAboveGroundBelowCeilingAtLevel(0, rY + 5f, 10.0f, 7.0f);
+            Instantiate(enemyPrefab, position, Quaternion.identity);
+        }
     }
 
     public void MovePlayerToLocation()

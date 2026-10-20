@@ -24,7 +24,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private World w;
 
     private float pitch = 0.0f;
-    private float verticalVelocity = 0.0f;
+    [SerializeField]  float verticalVelocity = 0.0f;
 
     private List<Action> updateActions = new List<Action>();
 
@@ -80,6 +80,16 @@ public class PlayerController : MonoBehaviour
 
         if (transform.position.y < -1000)
         {
+            if (StoryManager.HasChangedToDoom)
+            {
+#if UNITY_EDITOR
+                UnityEditor.EditorApplication.isPlaying = false;
+#else
+                Application.Quit();
+#endif
+            }
+            
+            w.MovePlayerToLocation();
             controller.enabled = false;
             transform.position = new Vector3(transform.position.x, 500, transform.position.z);
             controller.enabled = true;
@@ -120,6 +130,8 @@ public class PlayerController : MonoBehaviour
         // keep negative so that it sticks to the ground unless explicitly positive
         if (controller.isGrounded && verticalVelocity < 0.0f) verticalVelocity = -2.0f;
         verticalVelocity += gravity * Time.deltaTime;
+        
+        if (verticalVelocity < -150.0f) verticalVelocity = -150.0f; // simulate terminal velocity
     }
 
     private void OnLook(InputAction.CallbackContext context)
