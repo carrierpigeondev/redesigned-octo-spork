@@ -70,6 +70,6 @@ public class StoryManager : MonoBehaviour
 
         RenderSettings.reflectionIntensity = 0f;
         
-        WarningText.SetText("Planetary Anomaly Bounds Will No Longer Phase You To Surface.");
+        WarningText.SetText("Dimensional Anomaly Bounds Will No Longer Phase You To Surface.");
     }
 }

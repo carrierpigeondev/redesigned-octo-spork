@@ -23,6 +23,12 @@ public class TurretEnemyBehavior : BillboardingEnemyBehavior
                 disabledCollider = true;
             }
             Float();
+            AimAtPlayer();
+            rotSpeed = 100;
+        }
+        else
+        {
+            rotSpeed = 10;
         }
     }
 
