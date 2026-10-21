@@ -22,6 +22,8 @@ public class StoryManager : MonoBehaviour
     [SerializeField] private GameObject ParentObject_03_ContinueResources_Text;
     [SerializeField] private GameObject ParentObject_04_Sleep_Text;
 
+    [SerializeField] private GameObject Byetext;
+
     [SerializeField] private World w;
     
     [SerializeField] private Material doomSkybox;
@@ -49,9 +51,11 @@ public class StoryManager : MonoBehaviour
 
         if (doomTimer > 30 && !HasChangedToDoom)
         {
+            CurrentState = StoryState._04_Sleep; // should already be, but just in case manually added to
             ChangeSkyboxDoom();
             HasChangedToDoom = true;
             w.SpawnEnemies(10, 20);
+            Byetext.SetActive(true);
         }
     }
 
